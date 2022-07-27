@@ -23,6 +23,7 @@
                             \nFor <b>USB-enabled Rutoken</b>: connect Rutoken to your mobile device via USB.</string>
     <string name="add_user_ok">User has been added</string>
     <string name="share_result">Share the document and the signature</string>
+    <string name="share_logcat">Поделиться логами</string>
     <string name="multivalued_rdn">Multiple RDN values with the same type</string>
     <string name="rdn_not_found">Suitable RDNs are not found</string>
     <string name="pin_incorrect">PIN is incorrect</string>
@@ -52,4 +53,24 @@
     <string name="exit">Exit</string>
     <string name="install">Install</string>
     <string name="privacy_policy">Privacy policy</string>
+    <string name="test_link">Тестовый переход</string>
+    <string name="user_default">По умолчанию</string>
+    <string name="unknown">неизвестно</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="select_default_user">Пользователь {0} выбран по умолчанию</string>
+    <string name="user_not_found">Пользователь по умолчанию не найдено</string>
+    <string name="user_not_found_rutoken">Пользователь по умолчанию не найден в списке rutoken</string>
+    <string name="rutoken_user_not_found">Пользователи rutoken не найдены.</string>
+    <string name="download_file">Выполняется загрузка файла …</string>
+    <string name="download_finish">Загрузка завершена …</string>
+    <string name="sign_document">Подписание документа …</string>
+    <string name="default_user_not_found">Пользователь по умолчанию не найден.</string>
+    <string name="url_param_not_found">Параметр {0} не передан</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="refresh_web_view">Обновить страницу</string>
+    <string name="select_user">Выбрать пользователя</string>
+    <string name="user_default_selected">Пользователь по умолчанию выбран</string>
+    <string name="logcat">Получить логи</string>
 </resources>

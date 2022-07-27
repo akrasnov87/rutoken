@@ -74,6 +74,7 @@ dependencies {
 
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'androidx.core:core-ktx:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
@@ -157,8 +158,8 @@ preBuild.doLast {
     requireFileInDirectory('libs', 'pkcs11wrapper*.jar')
 }
 
-clean {
+/*clean {
     delete fileTree('libs').matching {
         include 'pkcs11jna*.jar', 'rtserviceconnection*.aar', 'pkcs11wrapper*.jar'
     }
-}
+}*/

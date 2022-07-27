@@ -6,6 +6,7 @@
 package ru.rutoken.demoshift.ui.sign
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 import ru.rutoken.demoshift.R
 import ru.rutoken.demoshift.databinding.FragmentSignBinding
+import ru.rutoken.demoshift.ui.dls.DeepLinkSignFragment
 import ru.rutoken.demoshift.ui.sign.SignFragmentDirections.toSignResultFragment
 import ru.rutoken.demoshift.ui.workprogress.WorkProgressView.Status
 import ru.rutoken.demoshift.utils.asReadableText
@@ -39,12 +41,17 @@ class SignFragment : Fragment() {
         val viewModel: SignViewModel =
             getViewModel(parameters = { parametersOf(args.pin, args.documentUri, args.userId) })
 
+        Log.d(DeepLinkSignFragment.TAG, args.pin)
+        Log.d(DeepLinkSignFragment.TAG, args.documentUri.toString())
+        Log.d(DeepLinkSignFragment.TAG, args.userId.toString())
 
         viewModel.status.observe(viewLifecycleOwner) {
             binding.workProgress.setStatus(it)
         }
 
         viewModel.result.observe(viewLifecycleOwner) { result ->
+            Log.d(DeepLinkSignFragment.TAG, result.isSuccess.toString())
+
             if (result.isSuccess) {
                 findNavController().navigate(
                     toSignResultFragment(

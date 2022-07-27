@@ -7,6 +7,7 @@ package ru.rutoken.demoshift.ui.document
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -20,6 +21,7 @@ import androidx.navigation.fragment.navArgs
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import ru.rutoken.demoshift.databinding.FragmentDocumentBinding
+import ru.rutoken.demoshift.ui.dls.DeepLinkSignFragment
 import ru.rutoken.demoshift.ui.document.DocumentFragmentDirections.toSignFragment
 import ru.rutoken.demoshift.ui.pin.PinDialogFragment
 import ru.rutoken.demoshift.ui.pin.PinDialogFragment.Companion.DIALOG_RESULT_KEY
@@ -62,11 +64,13 @@ class DocumentFragment : Fragment() {
         }
 
         childFragmentManager.setFragmentResultListener(DIALOG_RESULT_KEY, this) { _, bundle ->
+            Log.d(DeepLinkSignFragment.TAG, viewModel.documentUri.value!!.toString())
+
             findNavController().navigate(
                 toSignFragment(
                     checkNotNull(bundle.getString(PIN_KEY)),
                     args.userId,
-                    viewModel.documentUri.value!!
+                    args.documentUri
                 )
             )
         }

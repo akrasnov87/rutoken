@@ -5,19 +5,27 @@
 
 package ru.rutoken.demoshift.ui.userlist
 
+import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import ru.rutoken.demoshift.R
 import ru.rutoken.demoshift.databinding.UserCardBinding
 import ru.rutoken.demoshift.repository.User
+import ru.rutoken.demoshift.ui.dls.UserUtils
 import ru.rutoken.demoshift.ui.userlist.UserListFragmentDirections.toDocumentFragment
 
-class UserListAdapter :
+class UserListAdapter(
+    private val context: Context,
+    private var listeners: UserSelectListeners
+) :
     RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
     private var users: SortedList<User> = SortedList(User::class.java, SortedListCallback(this))
 
@@ -26,10 +34,19 @@ class UserListAdapter :
         notifyDataSetChanged()
     }
 
+    fun getUsers(): ArrayList<User> {
+        val array = ArrayList<User>()
+        for (i in 0 until users.size()) {
+            array.add(users.get(i))
+        }
+        return array
+    }
+
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         val view = holder.view
         val user = getUser(position)
         val binding = UserCardBinding.bind(view)
+
         binding.userFullName.text = user.fullName
         binding.userPosition.text =
             user.position ?: view.context.getString(R.string.field_not_set)
@@ -37,9 +54,24 @@ class UserListAdapter :
             R.string.field_not_set
         )
         binding.userCertificateExpires.text = user.certificateExpires
+        if(user.userEntity.userDefault) {
+            binding.userDefault.text = context.getString(R.string.yes)
+        } else {
+            binding.userDefault.text = context.getString(R.string.no)
+        }
 
         binding.userCardView.setOnClickListener {
-            view.findNavController().navigate(toDocumentFragment(user.userEntity.id))
+            if(!user.userEntity.userDefault) {
+                user.userEntity.userDefault = true
+
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.user_default_selected),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            listeners.onUserSelect(user)
         }
     }
 

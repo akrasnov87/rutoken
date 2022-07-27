@@ -9,6 +9,8 @@ package ru.rutoken.demoshift.database
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.Expose
+import java.io.Serializable
 
 @Entity(
     tableName = "users",
@@ -21,5 +23,8 @@ data class UserEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = AUTOGENERATE,
     val certificateDerValue: ByteArray,
     val ckaId: ByteArray,
-    val tokenSerialNumber: String
-)
+    @Expose
+    val tokenSerialNumber: String,
+    var userDefault: Boolean = false,
+    var pin: String?
+): Serializable

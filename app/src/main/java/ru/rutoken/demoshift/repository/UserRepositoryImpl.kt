@@ -8,8 +8,10 @@ package ru.rutoken.demoshift.repository
 
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import ru.rutoken.demoshift.database.Database
+import ru.rutoken.demoshift.database.UserEntity
 
 @AnyThread
 class UserRepositoryImpl(database: Database) : UserRepository {
@@ -24,7 +26,13 @@ class UserRepositoryImpl(database: Database) : UserRepository {
         userEntityList.map { makeUser(it) }
     }
 
+    @MainThread
+    override fun getUserAsync(userId: Int) = Transformations.map(userDao.getUserAsync(userId)) { user ->
+        makeUser(user)
+    }
+
     override suspend fun addUser(user: User) = userDao.addUser(user.userEntity)
 
     override suspend fun removeUser(user: User) = userDao.deleteUser(user.userEntity)
+    override suspend fun updateUser(user: User)  = userDao.updateUser(user.userEntity)
 }

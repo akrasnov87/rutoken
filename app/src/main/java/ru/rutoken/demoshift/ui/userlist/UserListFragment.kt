@@ -5,9 +5,12 @@
 
 package ru.rutoken.demoshift.ui.userlist
 
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,21 +21,24 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.rutoken.demoshift.R
 import ru.rutoken.demoshift.databinding.FragmentUserListBinding
+import ru.rutoken.demoshift.repository.User
 import ru.rutoken.demoshift.ui.launchCustomTabsUrl
 import ru.rutoken.demoshift.ui.pin.PinDialogFragment
 import ru.rutoken.demoshift.ui.pin.PinDialogFragment.Companion.DIALOG_RESULT_KEY
 import ru.rutoken.demoshift.ui.pin.PinDialogFragment.Companion.PIN_KEY
 import ru.rutoken.demoshift.ui.userlist.UserListFragmentDirections.toCertificateListFragment
 
-private const val PRIVACY_POLICY_URL = "https://www.rutoken.ru/company/policy/demosmena-android.html"
 
-class UserListFragment : Fragment() {
+const val PRIVACY_POLICY_URL = "https://www.rutoken.ru/company/policy/demosmena-android.html"
+
+class UserListFragment : UserSelectListeners, Fragment() {
     private lateinit var binding: FragmentUserListBinding
     private val viewModel: UserListViewModel by viewModel()
-    private val userListAdapter = UserListAdapter()
+    private lateinit var userListAdapter: UserListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        userListAdapter = UserListAdapter(requireContext(), this)
         childFragmentManager.setFragmentResultListener(DIALOG_RESULT_KEY, this) { _, bundle ->
             val pin = bundle.getString(PIN_KEY)
             findNavController().navigate(toCertificateListFragment(pin!!))
@@ -64,7 +70,7 @@ class UserListFragment : Fragment() {
 
         setupToolbar()
 
-        viewModel.getUsers().observe(viewLifecycleOwner) {
+        viewModel.getUsersAsync().observe(viewLifecycleOwner) {
             userListAdapter.setUsers(it)
 
             binding.emptyUserListTextView.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
@@ -113,5 +119,25 @@ class UserListFragment : Fragment() {
                 )
                 .show()
         }
+    }
+
+    var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val data: Intent? = result.data
+
+        }
+    }
+
+    override fun onUserSelect(user: User) {
+        val users = userListAdapter.getUsers()
+        for (u in users) {
+            if(u.userEntity.id != user.userEntity.id) {
+                u.userEntity.userDefault = false
+            }
+            viewModel.updateUser(u)
+        }
+        findNavController().popBackStack(R.id.webFragment, true);
+        //findNavController().navigate(R.id.webFragment)
     }
 }

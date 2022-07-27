@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import ru.rutoken.demoshift.R
 import ru.rutoken.demoshift.databinding.FragmentSignResultBinding
 import ru.rutoken.demoshift.ui.signresult.SignResultFragmentDirections.toUserListFragment
 import ru.rutoken.demoshift.utils.shareFileAndSignature
@@ -26,6 +27,7 @@ class SignResultFragment : Fragment() {
         val args: SignResultFragmentArgs by navArgs()
 
         binding.shareButton.setOnClickListener {
+            findNavController().popBackStack(R.id.webFragment, false)
             startActivity(shareFileAndSignature(args.documentUri, args.signature, requireContext()))
         }
 

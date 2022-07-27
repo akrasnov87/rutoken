@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (!isRutokenPanelInstalled(this)) {
             InstallPanelDialogFragment().show(supportFragmentManager, null)
+            return
         }
     }
 }

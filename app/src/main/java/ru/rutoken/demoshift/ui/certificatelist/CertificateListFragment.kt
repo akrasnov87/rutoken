@@ -31,6 +31,7 @@ class CertificateListFragment : Fragment() {
 
     private val certificatesListAdapter = CertificateListAdapter(object : CertificateCardListener {
         override fun onClick(certificate: Certificate) {
+            certificate.userEntity.pin = viewModel.getTokenPin()
             viewModel.addUser(certificate)
         }
     })

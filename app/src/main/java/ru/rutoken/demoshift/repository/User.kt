@@ -6,25 +6,37 @@
 
 package ru.rutoken.demoshift.repository
 
+import com.google.gson.annotations.Expose
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.x500.style.BCStyle
 import org.bouncycastle.cert.X509CertificateHolder
 import ru.rutoken.demoshift.database.UserEntity
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
 data class User(
+    @Expose
     val userEntity: UserEntity,
+    @Expose
     val fullName: String,
+    @Expose
     val position: String?,
+    @Expose
     val organization: String?,
+    @Expose
     val certificateExpires: String,
+    @Expose
     val inn: String?,
+    @Expose
     val innle: String?,
+    @Expose
     val ogrn: String?,
+    @Expose
     val ogrnip: String?,
+    @Expose
     val algorithmId: String?
-)
+): Serializable
 
 private const val INN_OID = "1.2.643.3.131.1.1"
 private const val INNLE_OID = "1.2.643.100.4"

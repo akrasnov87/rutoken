@@ -37,7 +37,7 @@ class CertificateListViewModel(
     private val context: Context,
     private val tokenManager: TokenManager,
     private val userRepository: UserRepository,
-    tokenPin: String
+    private val tokenPin: String
 ) : ViewModel() {
     private val _status = MutableLiveData(
         Status(
@@ -58,6 +58,10 @@ class CertificateListViewModel(
         createCertificateList(tokenPin)
     }
 
+    fun getTokenPin(): String {
+        return tokenPin
+    }
+
     private fun createCertificateList(tokenPin: String) = viewModelScope.launch {
         try {
             val token = tokenManager.getSingleTokenAsync().await()
@@ -74,7 +78,8 @@ class CertificateListViewModel(
                     UserEntity(
                         certificateDerValue = it.certificate.encoded,
                         ckaId = it.ckaId,
-                        tokenSerialNumber = serialNumber
+                        tokenSerialNumber = serialNumber,
+                        pin = null
                     )
                 )
             })

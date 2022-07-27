@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.dls.DeepLinkSignFragment"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
+
+    <ProgressBar
+        android:id="@+id/dls_progress_bar"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:indeterminate="true"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/dls_label"
+        app:layout_constraintTop_toBottomOf="@id/dls_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Обработка ..."/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

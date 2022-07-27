@@ -20,8 +20,14 @@ interface UserDao {
     @Query("SELECT * FROM users")
     fun getUsersAsync(): LiveData<List<UserEntity>>
 
+    @Query("SELECT * FROM users WHERE id = :userId")
+    fun getUserAsync(userId: Int): LiveData<UserEntity>
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun addUser(user: UserEntity)
+
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    suspend fun updateUser(user: UserEntity)
 
     @Delete
     suspend fun deleteUser(user: UserEntity)

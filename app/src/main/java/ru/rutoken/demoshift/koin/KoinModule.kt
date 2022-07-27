@@ -21,9 +21,11 @@ import ru.rutoken.demoshift.ui.certificatelist.CertificateListViewModel
 import ru.rutoken.demoshift.ui.document.DocumentViewModel
 import ru.rutoken.demoshift.repository.UserRepository
 import ru.rutoken.demoshift.repository.UserRepositoryImpl
+import ru.rutoken.demoshift.ui.dls.DeepLinkSignViewModel
 import ru.rutoken.demoshift.ui.main.MainViewModel
 import ru.rutoken.demoshift.ui.sign.SignViewModel
 import ru.rutoken.demoshift.ui.userlist.UserListViewModel
+import ru.rutoken.demoshift.ui.web.WebViewModel
 import ru.rutoken.pkcs11wrapper.main.Pkcs11Module
 
 val koinModule = module {
@@ -34,6 +36,7 @@ val koinModule = module {
     single {
         Room.databaseBuilder(androidContext(), Database::class.java, "demoshift_database")
             .addMigrations(MIGRATION_1_2)
+            .allowMainThreadQueries()
             .fallbackToDestructiveMigrationOnDowngrade()
             .build()
     }
@@ -41,9 +44,11 @@ val koinModule = module {
         CertificateListViewModel(androidContext(), get(), get(), tokenPin)
     }
     viewModel { UserListViewModel(get()) }
+    viewModel { DeepLinkSignViewModel(androidContext(), get()) }
     viewModel { (tokenPin: String, documentUri: Uri, userId: Int) ->
         SignViewModel(androidContext(), get(), tokenPin, documentUri, get(), userId)
     }
+    viewModel { WebViewModel(androidContext(), get(), get()) }
     viewModel { DocumentViewModel(androidContext()) }
     viewModel { MainViewModel(get()) }
 }

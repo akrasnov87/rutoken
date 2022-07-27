@@ -13,9 +13,11 @@ import ru.rutoken.demoshift.repository.User
 import ru.rutoken.demoshift.repository.UserRepository
 
 class UserListViewModel(private val repository: UserRepository) : ViewModel() {
-    fun getUsers(): LiveData<List<User>> = repository.getUsersAsync()
+    fun getUsersAsync(): LiveData<List<User>> = repository.getUsersAsync()
 
     fun removeUser(user: User) = viewModelScope.launch { repository.removeUser(user) }
 
     fun addUser(user: User) = viewModelScope.launch { repository.addUser(user) }
+
+    fun updateUser(user: User) = viewModelScope.launch { repository.updateUser(user) }
 }
