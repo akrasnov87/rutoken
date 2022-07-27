@@ -1,5 +1,4 @@
 <resources>
-    <string name="rutoken">Алькона СЭД</string>
     <string name="app_name">СЭД</string>
     <string name="user_position">Должность</string>
     <string name="user_organization">Организация</string>
@@ -7,8 +6,6 @@
     <string name="field_not_set">&lt;не задано&gt;</string>
     <string name="choose_user">Выберите пользователя</string>
     <string name="choose_certificate">Выберите сертификат</string>
-    <string name="sign">Подписать</string>
-    <string name="back_to_user_list">К списку пользователей</string>
     <string name="copy_text">Копировать</string>
     <string name="error_text">Что-то пошло не так.\nПопробуйте повторить операцию</string>
     <string name="add_user">Добавить пользователя</string>
@@ -22,9 +19,6 @@
                             \nДля <b>Рутокена Bluetooth</b>: включите Bluetooth на мобильном устройстве и свяжите с ним Рутокен.\n
                             \nДля <b>USB-токена</b>: подключите Рутокен к USB-разъему.</string>
     <string name="add_user_ok">Пользователь добавлен</string>
-    <string name="share_result">Поделиться документом и подписью</string>
-    <string name="multivalued_rdn">Несколько значений RDN с одинаковым типом</string>
-    <string name="rdn_not_found">Не найдены подходящие RDN</string>
     <string name="pin_incorrect">Неверный PIN-код</string>
     <string name="pin_locked">Превышен лимит ошибок при вводе PIN-кода</string>
     <string name="key_pair_not_found">Не удалось найти ключи, соответствующие сертификату</string>
@@ -36,8 +30,6 @@
     <string name="no_user">Пользователи ещё не зарегистрированы</string>
     <string name="user_removed">Пользователь удалён</string>
     <string name="undo">Отмена</string>
-    <string name="select_file">Выбрать файл</string>
-    <string name="can_not_display_file">Не удалось отобразить файл\n\nВозможно отображение только PDF файлов</string>
     <string name="too_many_tokens">К устройству подключено несколько Рутокенов\n\nПожалуйста, оставьте только один</string>
     <string name="algorithm">Алгоритм</string>
     <string name="inn">ИНН</string>
@@ -52,21 +44,10 @@
     <string name="exit">Выход</string>
     <string name="install">Установить</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
-    <string name="test_link">Тестовый переход</string>
     <string name="user_default">По умолчанию</string>
     <string name="unknown">неизвестно</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-    <string name="select_default_user">Пользователь {0} выбран по умолчанию</string>
-    <string name="user_not_found">Пользователь по умолчанию не найдено</string>
-    <string name="user_not_found_rutoken">Пользователь по умолчанию не найден в списке rutoken</string>
-    <string name="rutoken_user_not_found">Пользователи rutoken не найдены.</string>
-    <string name="download_file">Выполняется загрузка файла …</string>
-    <string name="download_finish">Загрузка завершена …</string>
-    <string name="sign_document">Подписание документа …</string>
-    <string name="default_user_not_found">Пользователь по умолчанию не найден.</string>
-    <string name="url_param_not_found">Параметр {0} не передан</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="refresh_web_view">Обновить страницу</string>
     <string name="select_user">Выбрать пользователя</string>
     <string name="user_default_selected">Пользователь по умолчанию выбран</string>

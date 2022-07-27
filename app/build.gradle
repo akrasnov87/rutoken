@@ -1,3 +1,6 @@
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'androidx.navigation.safeargs'
@@ -10,7 +13,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionName "1.2.0"
+        versionName getVersion()
         versionCode 5
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
@@ -163,3 +166,29 @@ preBuild.doLast {
         include 'pkcs11jna*.jar', 'rtserviceconnection*.aar', 'pkcs11wrapper*.jar'
     }
 }*/
+
+static def startOfDay() {
+    def now = new Date().getTime()
+    def start = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2022-07-25 0:00:00").getTime()
+
+    return new DecimalFormat("#").format(Math.floor(Math.abs(now - start) / (1000 * 3600 * 24)))
+}
+
+static def minuteOfDay() {
+    def now = new Date()
+    return (now.format("HH").toInteger() * 60) + now.format("mm").toInteger()
+}
+
+static def getRelease() {
+    /**
+     * 0 – альфа (прототип);
+     * 1 – бета (бета);
+     * 2 – выпуск-кандидат (передан на тестирование заказчику);
+     * 3 – публичный выпуск (окончательно передан заказчику).
+     */
+    return 0
+}
+
+static def getVersion() {
+    return "0." + startOfDay() + "." + getRelease() + "." + minuteOfDay()
+}
