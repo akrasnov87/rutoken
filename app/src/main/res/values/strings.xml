@@ -1,6 +1,6 @@
 <resources>
-    <string name="rutoken">Рутокен</string>
-    <string name="app_name">Демоcмена</string>
+    <string name="rutoken">Алькона СЭД</string>
+    <string name="app_name">СЭД</string>
     <string name="user_position">Должность</string>
     <string name="user_organization">Организация</string>
     <string name="user_certificate_expires">Сертификат истекает</string>
@@ -66,10 +66,12 @@
     <string name="sign_document">Подписание документа …</string>
     <string name="default_user_not_found">Пользователь по умолчанию не найден.</string>
     <string name="url_param_not_found">Параметр {0} не передан</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="refresh_web_view">Обновить страницу</string>
     <string name="select_user">Выбрать пользователя</string>
     <string name="user_default_selected">Пользователь по умолчанию выбран</string>
     <string name="logcat">Получить логи</string>
+    <string name="share_logcat">Поделиться логами logcat</string>
+    <string name="download">Загрузка …</string>
+    <string name="signature">Подписание …</string>
 </resources>

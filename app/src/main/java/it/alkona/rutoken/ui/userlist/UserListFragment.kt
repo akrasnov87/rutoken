@@ -121,14 +121,6 @@ class UserListFragment : UserSelectListeners, Fragment() {
         }
     }
 
-    var resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            // There are no request codes
-            val data: Intent? = result.data
-
-        }
-    }
-
     override fun onUserSelect(user: User) {
         val users = userListAdapter.getUsers()
         for (u in users) {

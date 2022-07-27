@@ -86,9 +86,7 @@ class WebFragment : Fragment() {
                         true
                     }
                     R.id.selectUser -> {
-                        findNavController().navigate(
-                            WebFragmentDirections.toUserListFragment()
-                        )
+                        findNavController().navigate(R.id.userListFragment)
                         true
                     }
                     R.id.logcat -> {
@@ -135,13 +133,13 @@ class WebFragment : Fragment() {
 
     @JavascriptInterface
     fun documentSelect(docId: String, url: String) {
-        webClientDocumentStatus(docId, "Загрузка ...", false)
+        webClientDocumentStatus(docId, getString(R.string.download), false)
 
         Thread {
             viewModel.downloadFile(requireActivity(), URL(url))
 
             requireActivity().runOnUiThread {
-                webClientDocumentStatus(docId, "Подписание ...", false)
+                webClientDocumentStatus(docId, getString(R.string.signature), false)
 
                 viewModel.sign(docId)
             }

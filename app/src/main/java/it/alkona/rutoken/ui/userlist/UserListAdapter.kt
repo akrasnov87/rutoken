@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.SortedListAdapterCallback
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.UserCardBinding
 import it.alkona.rutoken.repository.User
-import it.alkona.rutoken.ui.userlist.UserListFragmentDirections.toDocumentFragment
 
 class UserListAdapter(
     private val context: Context,

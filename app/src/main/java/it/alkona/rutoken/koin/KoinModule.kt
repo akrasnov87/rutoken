@@ -18,11 +18,9 @@ import it.alkona.rutoken.pkcs11.Pkcs11Launcher
 import it.alkona.rutoken.pkcs11.RtPkcs11Module
 import it.alkona.rutoken.tokenmanager.TokenManager
 import it.alkona.rutoken.ui.certificatelist.CertificateListViewModel
-import it.alkona.rutoken.ui.document.DocumentViewModel
 import it.alkona.rutoken.repository.UserRepository
 import it.alkona.rutoken.repository.UserRepositoryImpl
 import it.alkona.rutoken.ui.main.MainViewModel
-import it.alkona.rutoken.ui.sign.SignViewModel
 import it.alkona.rutoken.ui.userlist.UserListViewModel
 import it.alkona.rutoken.ui.web.WebViewModel
 import ru.rutoken.pkcs11wrapper.main.Pkcs11Module
@@ -33,7 +31,7 @@ val koinModule = module {
     single { TokenManager().also { get<Pkcs11Launcher>().addListener(it) } }
     single<UserRepository> { UserRepositoryImpl(get()) }
     single {
-        Room.databaseBuilder(androidContext(), Database::class.java, "demoshift_database")
+        Room.databaseBuilder(androidContext(), Database::class.java, "alkona_database")
             .addMigrations(MIGRATION_1_2)
             .allowMainThreadQueries()
             .fallbackToDestructiveMigrationOnDowngrade()
@@ -43,10 +41,6 @@ val koinModule = module {
         CertificateListViewModel(androidContext(), get(), get(), tokenPin)
     }
     viewModel { UserListViewModel(get()) }
-    viewModel { (tokenPin: String, documentUri: Uri, userId: Int) ->
-        SignViewModel(androidContext(), get(), tokenPin, documentUri, get(), userId)
-    }
     viewModel { WebViewModel(androidContext(), get(), get()) }
-    viewModel { DocumentViewModel(androidContext()) }
     viewModel { MainViewModel(get()) }
 }

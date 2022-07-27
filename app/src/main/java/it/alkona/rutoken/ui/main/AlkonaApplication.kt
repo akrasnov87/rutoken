@@ -15,11 +15,11 @@ import it.alkona.rutoken.Constants
 import java.io.File
 
 
-class DemoshiftApplication : Application() {
+class AlkonaApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            androidContext(this@DemoshiftApplication)
+            androidContext(this@AlkonaApplication)
             modules(koinModule)
         }
         get<TokenManager>()

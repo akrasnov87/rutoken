@@ -11,13 +11,6 @@
         android:label="web_view"
         tools:layout="@layout/fragment_web">
         <action
-            android:id="@+id/toDocumentFragment"
-            app:destination="@id/documentFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out" />
-        <action
             android:id="@+id/toUserListFragment"
             app:destination="@id/userListFragment"
             app:enterAnim="@anim/fade_in"
@@ -32,85 +25,12 @@
         android:label="fragment_user_list"
         tools:layout="@layout/fragment_user_list">
         <action
-            android:id="@+id/toDocumentFragment"
-            app:destination="@id/documentFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out" />
-        <action
             android:id="@+id/toCertificateListFragment"
             app:destination="@id/certificateListFragment"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/documentFragment"
-        android:name="it.alkona.rutoken.ui.document.DocumentFragment"
-        android:label="fragment_document"
-        tools:layout="@layout/fragment_document">
-        <argument
-            android:name="user_id"
-            app:argType="integer" />
-        <argument
-            android:name="document_uri"
-            app:argType="android.net.Uri" />
-        <action
-            android:id="@+id/toSignFragment"
-            app:destination="@id/signFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/signFragment"
-        android:name="it.alkona.rutoken.ui.sign.SignFragment"
-        android:label="fragment_sign"
-        tools:layout="@layout/fragment_sign">
-        <argument
-            android:name="pin"
-            app:argType="string" />
-        <argument
-            android:name="user_id"
-            app:argType="integer" />
-        <argument
-            android:name="document_uri"
-            app:argType="android.net.Uri" />
-        <action
-            android:id="@+id/toSignResultFragment"
-            app:destination="@id/signResultFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out"
-            app:popUpTo="@id/documentFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/signResultFragment"
-        android:name="it.alkona.rutoken.ui.signresult.SignResultFragment"
-        android:label="fragment_sign_result"
-        tools:layout="@layout/fragment_sign_result">
-        <argument
-            android:name="document_uri"
-            app:argType="android.net.Uri" />
-        <argument
-            android:name="signature"
-            app:argType="string" />
-        <action
-            android:id="@+id/toUserListFragment"
-            app:destination="@id/userListFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out"
-            app:popUpTo="@+id/userListFragment"
-            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
