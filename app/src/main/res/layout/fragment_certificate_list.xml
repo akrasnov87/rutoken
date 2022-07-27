@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center">
 
-                <ru.rutoken.demoshift.ui.workprogress.WorkProgressView
+                <it.alkona.rutoken.ui.workprogress.WorkProgressView
                     android:id="@+id/workProgress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
