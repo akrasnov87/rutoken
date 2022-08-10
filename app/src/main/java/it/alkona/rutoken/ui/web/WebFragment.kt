@@ -40,6 +40,8 @@ class WebFragment : Fragment() {
         viewModel = getViewModel()
 
         viewModel.result.observe(viewLifecycleOwner) { result ->
+            Log.d(Constants.TAG, "Результат подписания документа ${viewModel.docId}: ${result.isSuccess}")
+
             if (result.isSuccess) {
                 webClientDocumentSignature(viewModel.docId, result.getOrThrow())
             } else {
@@ -54,6 +56,17 @@ class WebFragment : Fragment() {
 
         viewModel.viewModelScope.launch {
             viewModel.initCurrentUser()
+            if(viewModel.user != null) {
+                Log.d(
+                    Constants.TAG,
+                    "Текущий пользователь инициализирован: ${viewModel.user!!.fullName}"
+                )
+            } else {
+                Log.d(
+                    Constants.TAG,
+                    "Текущий пользователь не найден"
+                )
+            }
         }
 
         webViewInit(binding.webView)
@@ -82,10 +95,15 @@ class WebFragment : Fragment() {
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.refreshWebView -> {
+                        Log.d(Constants.TAG, "Выбор пункта меню: Обновление страницы")
+
+                        //documentSelect("1234", "https://mobile.delo.cap.ru/filestorage/Documents/782b6d26-4b04-4d2c-9868-6f0eef0732d0/download.do")
                         binding.webView.reload()
                         true
                     }
                     R.id.selectUser -> {
+                        Log.d(Constants.TAG, "Выбор пункта меню: Выбор пользователя")
+
                         findNavController().navigate(R.id.userListFragment)
                         true
                     }
@@ -101,15 +119,19 @@ class WebFragment : Fragment() {
 
     private fun webViewInit(webView: WebView) {
         webView.webChromeClient = CustomWebChromeClient(requireContext())
+        webView.webViewClient = SSLTolerentWebViewClient()
+        webView.settings.domStorageEnabled = true
         webView.addJavascriptInterface(this, Constants.JS_OBJECT)
         webView.apply {
             settings.javaScriptEnabled = true
         }
-
+        Log.d(Constants.TAG, "Страница для загрузки ${Constants.URL}")
         webView.loadUrl(Constants.URL)
     }
 
     private fun webClientDocumentStatus(docId: String, message: String, isError: Boolean) {
+        Log.d(Constants.TAG, "Вызов клиентской функции: RutokenWeb.documentStatus")
+
         requireActivity().runOnUiThread {
             binding.webView.evaluateJavascript(
                 "RutokenWeb.documentStatus('${docId}', '${message}', ${isError})",
@@ -119,6 +141,8 @@ class WebFragment : Fragment() {
     }
 
     private fun webClientDocumentSignature(docId: String, signature: String) {
+        Log.d(Constants.TAG, "Вызов клиентской функции: RutokenWeb.documentSignature")
+
         requireActivity().runOnUiThread {
             val byte = signature.toByteArray(charset("UTF-8"))
             val base64 = Base64.getEncoder().encodeToString(byte)
@@ -133,6 +157,8 @@ class WebFragment : Fragment() {
 
     @JavascriptInterface
     fun documentSelect(docId: String, url: String) {
+        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.documentSelect")
+
         webClientDocumentStatus(docId, getString(R.string.download), false)
 
         Thread {
@@ -151,7 +177,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun getCurrentUser(): String {
-        Log.d(Constants.TAG, "Запрос на получение информации о пользователе.")
+        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.getCurrentUser")
 
         val user = viewModel.user
         return if(user != null) {
@@ -168,7 +194,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun documentDone(docId: String) {
-        Log.d(Constants.TAG, "Документ ${docId} подписан успешно.")
+        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.documentDone")
 
         val file = viewModel.getDocumentFile(requireActivity())
         if (file.exists()) {
@@ -176,5 +202,15 @@ class WebFragment : Fragment() {
                 Log.d(Constants.TAG, "Документ ${docId} удалён.")
             }
         }
+    }
+
+    /**
+     * Проверка доступности мобильного интерфейса
+     */
+    @JavascriptInterface
+    fun enabled(): Boolean {
+        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.enabled")
+
+        return true
     }
 }

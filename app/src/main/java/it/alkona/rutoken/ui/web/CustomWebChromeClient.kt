@@ -32,6 +32,7 @@ class CustomWebChromeClient(
      */
     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
         consoleMessage?.message()?.let { Log.d(Constants.TAG, it) }
+
         return super.onConsoleMessage(consoleMessage)
     }
 }

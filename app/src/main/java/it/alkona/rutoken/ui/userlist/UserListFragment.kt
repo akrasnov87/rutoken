@@ -9,6 +9,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.content.ContextCompat
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import it.alkona.rutoken.Constants
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.FragmentUserListBinding
@@ -50,6 +52,7 @@ class UserListFragment : UserSelectListeners, Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(Constants.TAG, "Интерфейс выбора пользователя")
         binding = FragmentUserListBinding.inflate(inflater)
         binding.addUserButton.setOnClickListener {
             PinDialogFragment().show(childFragmentManager, null)
@@ -122,6 +125,7 @@ class UserListFragment : UserSelectListeners, Fragment() {
     }
 
     override fun onUserSelect(user: User) {
+        Log.d(Constants.TAG, "Пользователь ${user.fullName} выбран по умолчанию")
         val users = userListAdapter.getUsers()
         for (u in users) {
             if(u.userEntity.id != user.userEntity.id) {
@@ -130,6 +134,5 @@ class UserListFragment : UserSelectListeners, Fragment() {
             viewModel.updateUser(u)
         }
         findNavController().popBackStack(R.id.webFragment, true);
-        //findNavController().navigate(R.id.webFragment)
     }
 }
