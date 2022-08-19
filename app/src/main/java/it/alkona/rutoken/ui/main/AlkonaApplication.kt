@@ -25,6 +25,6 @@ class AlkonaApplication : Application() {
         get<TokenManager>()
 
         val filePath = File(cacheDir, Constants.LOGCAT)
-        Runtime.getRuntime().exec(arrayOf("logcat", "-f", filePath.path, "*:E", "${Constants.TAG}:V", "*:S"))
+        Runtime.getRuntime().exec(arrayOf("logcat", "-f", filePath.path, "*:V"))
     }
 }

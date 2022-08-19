@@ -97,7 +97,7 @@ class WebFragment : Fragment() {
                     R.id.refreshWebView -> {
                         Log.d(Constants.TAG, "Выбор пункта меню: Обновление страницы")
 
-                        //documentSelect("1234", "https://mobile.delo.cap.ru/filestorage/Documents/782b6d26-4b04-4d2c-9868-6f0eef0732d0/download.do")
+                        //documentSelect("1234", "https://delo.cap.ru/files/documents/2022/7/28/782b6d26-4b04-4d2c-9868-6f0eef0732d0")
                         binding.webView.reload()
                         true
                     }

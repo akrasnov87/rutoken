@@ -2,7 +2,8 @@ package it.alkona.rutoken
 
 class Constants {
     companion object {
-        const val TAG = "ALKONA"
+        const val TAG = "ALKONA_TAG"
+        const val CONSOLE_TAG = "ALKONA_CONSOLE_TAG"
         // JS объект которой будет создан в webview
         const val JS_OBJECT = "RutokenAndroid"
 
