@@ -21,7 +21,10 @@ import it.alkona.rutoken.databinding.FragmentWebBinding
 import it.alkona.rutoken.Constants
 import it.alkona.rutoken.utils.asReadableText
 import it.alkona.rutoken.utils.shareFileAndLogcat
+import org.bouncycastle.cert.X509CertificateHolder
+import java.net.MalformedURLException
 import java.net.URL
+import java.text.DateFormat
 import java.util.*
 
 /**
@@ -157,19 +160,43 @@ class WebFragment : Fragment() {
 
     @JavascriptInterface
     fun documentSelect(docId: String, url: String) {
-        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.documentSelect")
+        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.documentSelect(${docId}, ${url})")
 
         webClientDocumentStatus(docId, getString(R.string.download), false)
 
         Thread {
-            viewModel.downloadFile(requireActivity(), URL(url))
+            try {
+                viewModel.downloadFile(requireActivity(), URL(url))
 
-            requireActivity().runOnUiThread {
-                webClientDocumentStatus(docId, getString(R.string.signature), false)
+                requireActivity().runOnUiThread {
+                    webClientDocumentStatus(docId, getString(R.string.signature), false)
 
-                viewModel.sign(docId)
+                    viewModel.sign(docId)
+                }
+            } catch (e: MalformedURLException) {
+                Log.d(Constants.TAG, "Ошибка вызов android функции: RutokenAndroid.documentSelect(${docId}, ${url})")
             }
         }.start()
+    }
+
+    /**
+     * Получение информации о сертификате
+     */
+    @JavascriptInterface
+    fun getCertificate(): String {
+        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.getCertificate")
+
+        val user = viewModel.user
+
+        val str = if(user != null) {
+            val json: Gson =
+                GsonBuilder().serializeNulls().create()
+            json.toJson(user.userEntity.certificateDerValue)
+        } else {
+            "[]"
+        }
+        Log.d(Constants.TAG, "Данные о сертификате: " + str)
+        return str
     }
 
     /**
@@ -180,13 +207,24 @@ class WebFragment : Fragment() {
         Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.getCurrentUser")
 
         val user = viewModel.user
-        return if(user != null) {
+
+        val str = if(user != null) {
+            val certificate = X509CertificateHolder(user.userEntity.certificateDerValue)
+            user.serialNumber = certificate.serialNumber
+            user.signature = certificate.signature
+            user.notAfter = certificate.notAfter
+            user.notBefore = certificate.notBefore
+            user.subjectName = certificate.subject
+            user.subjectPublicKeyInfo = certificate.subjectPublicKeyInfo
+
             val json: Gson =
-                GsonBuilder().serializeNulls().excludeFieldsWithoutExposeAnnotation().create()
+                GsonBuilder().setDateFormat("dd.MM.YYYY").serializeNulls().create()
             json.toJson(user)
         } else {
             "{}"
         }
+        Log.d(Constants.TAG, "Информация о текущем пользователе: " + str)
+        return str
     }
 
     /**

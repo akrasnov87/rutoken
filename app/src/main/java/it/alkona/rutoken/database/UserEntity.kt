@@ -21,7 +21,10 @@ import java.io.Serializable
 )
 data class UserEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = AUTOGENERATE,
+
+    @Expose
     val certificateDerValue: ByteArray,
+    @Expose
     val ckaId: ByteArray,
     @Expose
     val tokenSerialNumber: String,

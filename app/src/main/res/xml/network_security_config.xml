@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">cic.it-serv.ru</domain>
         <domain includeSubdomains="true">mobile.delo.cap.ru</domain>
         <domain includeSubdomains="true">delo.cap.ru</domain>
         <trust-anchors>

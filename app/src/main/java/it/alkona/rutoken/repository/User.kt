@@ -11,7 +11,10 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.x500.style.BCStyle
 import org.bouncycastle.cert.X509CertificateHolder
 import it.alkona.rutoken.database.UserEntity
+import org.bouncycastle.asn1.x500.X500Name
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
 import java.io.Serializable
+import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,7 +38,20 @@ data class User(
     @Expose
     val ogrnip: String?,
     @Expose
-    val algorithmId: String?
+    val algorithmId: String?,
+
+    @Expose
+    var serialNumber: BigInteger? = null,
+    @Expose
+    var signature: ByteArray? = null,
+    @Expose
+    var notBefore: Date? = null,
+    @Expose
+    var notAfter: Date? = null,
+    @Expose
+    var subjectName: X500Name? = null,
+    @Expose
+    var subjectPublicKeyInfo: SubjectPublicKeyInfo? = null
 ): Serializable
 
 private const val INN_OID = "1.2.643.3.131.1.1"
