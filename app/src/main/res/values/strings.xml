@@ -55,4 +55,5 @@
     <string name="share_logcat">Поделиться логами logcat</string>
     <string name="download">Загрузка …</string>
     <string name="signature">Подписание …</string>
+    <string name="sign_сert">Вход по сертификату …</string>
 </resources>

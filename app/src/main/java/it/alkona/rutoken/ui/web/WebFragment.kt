@@ -22,6 +22,7 @@ import it.alkona.rutoken.Constants
 import it.alkona.rutoken.utils.asReadableText
 import it.alkona.rutoken.utils.shareFileAndLogcat
 import org.bouncycastle.cert.X509CertificateHolder
+import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
 import java.text.DateFormat
@@ -46,7 +47,11 @@ class WebFragment : Fragment() {
             Log.d(Constants.TAG, "Результат подписания документа ${viewModel.docId}: ${result.isSuccess}")
 
             if (result.isSuccess) {
-                webClientDocumentSignature(viewModel.docId, result.getOrThrow())
+                if (viewModel.docId == "unknown") {
+                    webClientTokenSignature(result.getOrThrow())
+                } else {
+                    webClientDocumentSignature(viewModel.docId, result.getOrThrow())
+                }
             } else {
                 val exceptionMessage = (result.exceptionOrNull() as Exception).message.orEmpty()
                 Log.d(Constants.TAG, exceptionMessage)
@@ -128,53 +133,88 @@ class WebFragment : Fragment() {
         webView.apply {
             settings.javaScriptEnabled = true
         }
+
         Log.d(Constants.TAG, "Страница для загрузки ${Constants.URL}")
         webView.loadUrl(Constants.URL)
     }
 
     private fun webClientDocumentStatus(docId: String, message: String, isError: Boolean) {
-        Log.d(Constants.TAG, "Вызов клиентской функции: RutokenWeb.documentStatus")
+        Log.d(Constants.TAG, "Вызов клиентской функции: rutokenStatus")
 
         requireActivity().runOnUiThread {
             binding.webView.evaluateJavascript(
-                "RutokenWeb.documentStatus('${docId}', '${message}', ${isError})",
+                "rutokenStatus('${docId}', '${message}', ${isError})",
                 null
             )
         }
     }
 
     private fun webClientDocumentSignature(docId: String, signature: String) {
-        Log.d(Constants.TAG, "Вызов клиентской функции: RutokenWeb.documentSignature")
+        val file = File(requireActivity().cacheDir, "document.cert")
+        file.writeText(clearSignature(signature))
+
+        Log.d(Constants.TAG, "Вызов клиентской функции: rutokenSignatureResult")
 
         requireActivity().runOnUiThread {
-            val byte = signature.toByteArray(charset("UTF-8"))
+            val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
             val base64 = Base64.getEncoder().encodeToString(byte)
             binding.webView.evaluateJavascript(
-                "RutokenWeb.documentSignature('${docId}', '${base64}')",
+                "rutokenSignatureResult('${docId}', '${base64}')",
                 null
             )
         }
+    }
+
+    private fun webClientTokenSignature(signature: String) {
+        Log.d(Constants.TAG, "Вызов клиентской функции: rutokenTokenSignature")
+
+        requireActivity().runOnUiThread {
+            val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
+            val base64 = Base64.getEncoder().encodeToString(byte)
+            binding.webView.evaluateJavascript(
+                "rutokenTokenSignature('${base64}')",
+                null
+            )
+        }
+    }
+
+    private fun clearSignature(signature: String): String {
+        val lines = signature.split("\n")
+        var str = ""
+        for (s in lines) {
+            if(s.startsWith("-----")) {
+                continue
+            }
+
+            if(s == "") {
+                continue
+            }
+
+            str += s
+        }
+        return str
     }
 
     // JS function
 
     @JavascriptInterface
     fun documentSelect(docId: String, url: String) {
-        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.documentSelect(${docId}, ${url})")
+        Log.d(Constants.TAG, "Вызов android функции: rutokenDocumentSelect(${docId}, ${url})")
 
         webClientDocumentStatus(docId, getString(R.string.download), false)
 
         Thread {
             try {
-                viewModel.downloadFile(requireActivity(), URL(url))
+                viewModel.downloadFile(requireActivity(), URL(Constants.URL + url))
+                //viewModel.downloadFile(requireActivity(), URL("https://delo.cap.ru/files/documents/2022/9/21/eeb3513a-a6e9-495b-8cc6-f0cb036121fd"))
 
                 requireActivity().runOnUiThread {
                     webClientDocumentStatus(docId, getString(R.string.signature), false)
 
-                    viewModel.sign(docId)
+                    viewModel.sign(docId, isAttached = false)
                 }
             } catch (e: MalformedURLException) {
-                Log.d(Constants.TAG, "Ошибка вызов android функции: RutokenAndroid.documentSelect(${docId}, ${url})")
+                Log.d(Constants.TAG, "Ошибка вызов android функции: rutokenDocumentSelect(${docId}, ${url})")
             }
         }.start()
     }
@@ -184,7 +224,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun getCertificate(): String {
-        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.getCertificate")
+        Log.d(Constants.TAG, "Вызов android функции: rutokenGetCertificate")
 
         val user = viewModel.user
 
@@ -200,39 +240,18 @@ class WebFragment : Fragment() {
     }
 
     /**
-     * Получение информации по пользователю rutoken
-     */
-    @JavascriptInterface
-    fun getCurrentUser(): String {
-        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.getCurrentUser")
-
-        val user = viewModel.user
-
-        val str = if(user != null) {
-            val certificate = X509CertificateHolder(user.userEntity.certificateDerValue)
-            user.serialNumber = certificate.serialNumber
-            user.signature = certificate.signature
-            user.notAfter = certificate.notAfter
-            user.notBefore = certificate.notBefore
-            user.subjectName = certificate.subject
-            user.subjectPublicKeyInfo = certificate.subjectPublicKeyInfo
-
-            val json: Gson =
-                GsonBuilder().setDateFormat("dd.MM.YYYY").serializeNulls().create()
-            json.toJson(user)
-        } else {
-            "{}"
-        }
-        Log.d(Constants.TAG, "Информация о текущем пользователе: " + str)
-        return str
-    }
-
-    /**
      * Указание информации, что подпись по документу получена и кэш можно удалять
      */
     @JavascriptInterface
-    fun documentDone(docId: String) {
-        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.documentDone")
+    fun done(docId: String) {
+        Log.d(Constants.TAG, "Вызов android функции: rutokenDone")
+
+        val cert = File(requireActivity().cacheDir, "document.cert")
+        if (cert.exists()) {
+            if(cert.delete()) {
+                Log.d(Constants.TAG, "Подпись документа ${docId} удалена.")
+            }
+        }
 
         val file = viewModel.getDocumentFile(requireActivity())
         if (file.exists()) {
@@ -247,8 +266,28 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun enabled(): Boolean {
-        Log.d(Constants.TAG, "Вызов android функции: RutokenAndroid.enabled")
+        Log.d(Constants.TAG, "Вызов android функции: rutokenEnabled")
 
         return true
+    }
+
+    /**
+     * включил вход по сертификату для мобильной версии
+     */
+    @JavascriptInterface
+    fun signToken(token: String) {
+        Log.d(Constants.TAG, "Вызов android функции: rutokenSignToken(${token})")
+
+        Thread {
+            try {
+                requireActivity().runOnUiThread {
+                    webClientDocumentStatus("unknown", getString(R.string.sign_сert), false)
+
+                    viewModel.signText(token)
+                }
+            } catch (e: MalformedURLException) {
+                Log.d(Constants.TAG, "Ошибка вызов android функции: rutokenSignToken(${token})")
+            }
+        }.start()
     }
 }

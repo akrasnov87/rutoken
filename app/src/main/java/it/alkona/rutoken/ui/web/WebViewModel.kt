@@ -84,7 +84,7 @@ class WebViewModel(private val context: Context,
         return File(activity.cacheDir, "document.pdf")
     }
 
-    fun sign(id: String) = viewModelScope.launch {
+    fun sign(id: String, isAttached: Boolean) = viewModelScope.launch {
         docId = id
         documentUri = Uri.parse("content://it.alkona.rutoken.fileprovider/cache_files/document.pdf")
 
@@ -94,7 +94,27 @@ class WebViewModel(private val context: Context,
             val token = tokenManager.getSingleTokenAsync().await()
             _status.value = WorkProgressView.Status(context.getString(R.string.processing), true)
 
-            val signResult = makeSign(user!!, token)
+            val signResult = makeSign(user!!, token, isAttached)
+
+            _status.value = WorkProgressView.Status(context.getString(R.string.done), false)
+            _result.value = Result.success(signResult)
+        } catch (e: Exception) {
+            val exception = if (e is ExecutionException) (e.cause ?: e) else e
+
+            _status.value = WorkProgressView.Status(null, false)
+            _result.value = Result.failure(exception)
+        }
+    }
+
+    fun signText(txt: String) = viewModelScope.launch {
+        docId = "unknown"
+        try {
+            tokenPin = user!!.userEntity.pin.toString()
+
+            val token = tokenManager.getSingleTokenAsync().await()
+            _status.value = WorkProgressView.Status(context.getString(R.string.processing), true)
+
+            val signResult = makeSignText(user!!, token, txt)
 
             _status.value = WorkProgressView.Status(context.getString(R.string.done), false)
             _result.value = Result.success(signResult)
@@ -133,7 +153,7 @@ class WebViewModel(private val context: Context,
         throw BusinessRuleException(BusinessRuleCase.FILE_UNAVAILABLE, e)
     }
 
-    private suspend fun makeSign(user: User, token: Pkcs11Token) = withContext(Dispatchers.IO) {
+    private suspend fun makeSign(user: User, token: Pkcs11Token, isAttached: Boolean) = withContext(Dispatchers.IO) {
         if (user.userEntity.tokenSerialNumber != token.getSerialNumber())
             throw BusinessRuleException(BusinessRuleCase.WRONG_RUTOKEN)
 
@@ -158,7 +178,42 @@ class WebViewModel(private val context: Context,
                         signature,
                         keyPair.privateKey,
                         certificate,
-                        false
+                        isAttached
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun makeSignText(user: User, token: Pkcs11Token, txt: String) = withContext(Dispatchers.IO) {
+        if (user.userEntity.tokenSerialNumber != token.getSerialNumber())
+            throw BusinessRuleException(BusinessRuleCase.WRONG_RUTOKEN)
+
+        token.openSession(false).use { session ->
+            session.login(Pkcs11UserType.CKU_USER, tokenPin).use {
+                requireCertificate(session, user.userEntity.certificateDerValue)
+                val certificate = X509CertificateHolder(user.userEntity.certificateDerValue)
+
+                val keyPair = try {
+                    GostObjectFinder.findKeyPairByCkaId(session, user.userEntity.ckaId)
+                } catch (e: IllegalStateException) {
+                    throw BusinessRuleException(BusinessRuleCase.KEY_PAIR_NOT_FOUND, e)
+                }
+
+                val signature = makeSignatureByHashOid(
+                    keyPair.privateKey.getGostR3411ParamsAttributeValue(session).byteArrayValue,
+                    session
+                )
+
+                val inputStream: InputStream = txt.byteInputStream()
+
+                inputStream.use { documentStream ->
+                    return@withContext signCms(
+                        documentStream,
+                        signature,
+                        keyPair.privateKey,
+                        certificate,
+                        true
                     )
                 }
             }

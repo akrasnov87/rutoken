@@ -3,6 +3,7 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">mobile.delo.cap.ru</domain>
         <domain includeSubdomains="true">delo.cap.ru</domain>
+        <domain includeSubdomains="true">cic.it-serv.ru</domain>
         <trust-anchors>
             <certificates src="@raw/cap"/>
         </trust-anchors>
