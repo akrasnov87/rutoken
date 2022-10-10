@@ -12,3 +12,4 @@ dev_beautify.yaml
 /keystore.properties
 /key.jks
 /app/debug
+/app/release

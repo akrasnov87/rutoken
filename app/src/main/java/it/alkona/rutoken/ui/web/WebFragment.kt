@@ -43,6 +43,7 @@ class WebFragment : Fragment() {
         binding = FragmentWebBinding.inflate(layoutInflater)
         viewModel = getViewModel()
 
+        // асинхронное получение результат попфтки подписания
         viewModel.result.observe(viewLifecycleOwner) { result ->
             Log.d(Constants.TAG, "Результат подписания документа ${viewModel.docId}: ${result.isSuccess}")
 
@@ -276,7 +277,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun signToken(token: String) {
-        Log.d(Constants.TAG, "Вызов android функции: rutokenSignToken(${token})")
+        Log.d(Constants.TAG, "Вызов android функции: rutokenSignToken('${token})'")
 
         Thread {
             try {
