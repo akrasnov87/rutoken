@@ -79,7 +79,9 @@ class CertificateListViewModel(
                         certificateDerValue = it.certificate.encoded,
                         ckaId = it.ckaId,
                         tokenSerialNumber = serialNumber,
-                        pin = null
+                        pin = null,
+                        slotDescription = token.slot.slotInfo.slotDescription,
+                        isNFC = token.slot.slotInfo.slotDescription.contains("Aktiv Rutoken ECP NFC")
                     )
                 )
             })

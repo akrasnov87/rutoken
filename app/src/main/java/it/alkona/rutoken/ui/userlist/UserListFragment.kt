@@ -71,7 +71,7 @@ class UserListFragment : UserSelectListeners, Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupToolbar()
+        //setupToolbar()
 
         viewModel.getUsersAsync().observe(viewLifecycleOwner) {
             userListAdapter.setUsers(it)
@@ -133,6 +133,7 @@ class UserListFragment : UserSelectListeners, Fragment() {
             }
             viewModel.updateUser(u)
         }
-        findNavController().popBackStack(R.id.webFragment, true);
+        findNavController().navigate(UserListFragmentDirections.toWebFragment())
+        //findNavController().popBackStack(R.id.webFragment, true);
     }
 }

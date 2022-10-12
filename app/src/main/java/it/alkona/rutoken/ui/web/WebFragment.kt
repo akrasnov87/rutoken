@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
@@ -34,6 +35,7 @@ import java.util.*
 class WebFragment : Fragment() {
     lateinit var binding: FragmentWebBinding
     lateinit var viewModel: WebViewModel
+    var rutokenWait: RutokenWaitFragment? = null
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
@@ -54,6 +56,9 @@ class WebFragment : Fragment() {
                     webClientDocumentSignature(viewModel.docId, result.getOrThrow())
                 }
             } else {
+                hideWaitFragment()
+                Snackbar.make(binding.root, R.string.connection_lost, Snackbar.LENGTH_SHORT).show()
+
                 val exceptionMessage = (result.exceptionOrNull() as Exception).message.orEmpty()
                 Log.d(Constants.TAG, exceptionMessage)
 
@@ -94,6 +99,20 @@ class WebFragment : Fragment() {
                     WebFragmentDirections.toUserListFragment()
                 )
             }
+        }
+    }
+
+    private fun showWaitFragment() {
+        rutokenWait = RutokenWaitFragment()
+        rutokenWait!!.show(requireActivity().supportFragmentManager, "wait")
+        Log.d(Constants.TAG, "Выводим окно с ожиданием")
+    }
+
+    private fun hideWaitFragment() {
+        if (rutokenWait != null) {
+            Log.d(Constants.TAG, "Убираем окно ожидания автоматически")
+            rutokenWait!!.dismiss()
+            rutokenWait = null
         }
     }
 
@@ -157,8 +176,8 @@ class WebFragment : Fragment() {
         Log.d(Constants.TAG, "Вызов клиентской функции: rutokenSignatureResult")
 
         requireActivity().runOnUiThread {
-            val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
-            val base64 = Base64.getEncoder().encodeToString(byte)
+            //val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
+            val base64 = clearSignature(signature) //Base64.getEncoder().encodeToString(byte)
             binding.webView.evaluateJavascript(
                 "rutokenSignatureResult('${docId}', '${base64}')",
                 null
@@ -170,8 +189,8 @@ class WebFragment : Fragment() {
         Log.d(Constants.TAG, "Вызов клиентской функции: rutokenTokenSignature")
 
         requireActivity().runOnUiThread {
-            val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
-            val base64 = Base64.getEncoder().encodeToString(byte)
+            //val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
+            val base64 = clearSignature(signature) //Base64.getEncoder().encodeToString(byte)
             binding.webView.evaluateJavascript(
                 "rutokenTokenSignature('${base64}')",
                 null
@@ -200,6 +219,9 @@ class WebFragment : Fragment() {
 
     @JavascriptInterface
     fun documentSelect(docId: String, url: String) {
+        requireActivity().runOnUiThread {
+            showWaitFragment()
+        }
         Log.d(Constants.TAG, "Вызов android функции: rutokenDocumentSelect(${docId}, ${url})")
 
         webClientDocumentStatus(docId, getString(R.string.download), false)
@@ -245,6 +267,10 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun done(docId: String) {
+        requireActivity().runOnUiThread {
+            hideWaitFragment()
+        }
+
         Log.d(Constants.TAG, "Вызов android функции: rutokenDone")
 
         val cert = File(requireActivity().cacheDir, "document.cert")
@@ -277,7 +303,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun signToken(token: String) {
-        Log.d(Constants.TAG, "Вызов android функции: rutokenSignToken('${token})'")
+        Log.d(Constants.TAG, "Вызов android функции: rutokenSignToken('${token}')")
 
         Thread {
             try {

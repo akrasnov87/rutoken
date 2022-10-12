@@ -92,6 +92,7 @@ class WebViewModel(private val context: Context,
             tokenPin = user!!.userEntity.pin.toString()
 
             val token = tokenManager.getSingleTokenAsync().await()
+            // token.slot.slotInfo.slotDescription Aktiv Rutoken ECP NFC
             _status.value = WorkProgressView.Status(context.getString(R.string.processing), true)
 
             val signResult = makeSign(user!!, token, isAttached)

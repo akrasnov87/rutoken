@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "fc3351e225d3222448d3aaada5f48c55",
+    "identityHash": "37c2f430a84cb260bdc4ce65b46e587c",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `certificateDerValue` BLOB NOT NULL, `ckaId` BLOB NOT NULL, `tokenSerialNumber` TEXT NOT NULL, `userDefault` INTEGER NOT NULL, `pin` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `certificateDerValue` BLOB NOT NULL, `ckaId` BLOB NOT NULL, `tokenSerialNumber` TEXT NOT NULL, `userDefault` INTEGER NOT NULL, `isNFC` INTEGER NOT NULL, `slotDescription` TEXT, `pin` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,6 +37,18 @@
             "columnName": "userDefault",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "isNFC",
+            "columnName": "isNFC",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "slotDescription",
+            "columnName": "slotDescription",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "pin",
@@ -77,7 +89,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc3351e225d3222448d3aaada5f48c55')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '37c2f430a84cb260bdc4ce65b46e587c')"
     ]
   }
 }

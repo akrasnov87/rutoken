@@ -31,6 +31,13 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/fade_out" />
+
+        <action
+            android:id="@+id/toWebFragment"
+            app:destination="@id/webFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/appNavigation"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

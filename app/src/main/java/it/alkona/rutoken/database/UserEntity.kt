@@ -29,5 +29,7 @@ data class UserEntity(
     @Expose
     val tokenSerialNumber: String,
     var userDefault: Boolean = false,
+    var isNFC: Boolean = false,
+    var slotDescription: String?,
     var pin: String?
 ): Serializable
