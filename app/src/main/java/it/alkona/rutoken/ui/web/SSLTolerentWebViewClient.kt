@@ -7,6 +7,9 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebView
 
 import android.webkit.WebViewClient
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
+import it.alkona.rutoken.ui.logger
 
 
 class SSLTolerentWebViewClient : WebViewClient() {
@@ -25,6 +28,6 @@ class SSLTolerentWebViewClient : WebViewClient() {
                 "rutokenSignToken = function(token) { console.log('Перенаправление на RutokenAndroid.signToken'); RutokenAndroid.signToken(token); }; " +
                 "})();")
 
-        //view?.evaluateJavascript("rutokenEnabled();", null)
+        logger("Внедряем javascript код для перенаправления на объекты window")
     }
 }

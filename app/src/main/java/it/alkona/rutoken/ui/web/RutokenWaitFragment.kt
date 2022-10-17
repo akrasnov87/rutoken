@@ -8,10 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import it.alkona.rutoken.Constants
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.DialogFragmentPinBinding
 import it.alkona.rutoken.databinding.FragmentRutokenWaitBinding
+import it.alkona.rutoken.ui.logger
 
 class RutokenWaitFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentRutokenWaitBinding
@@ -33,6 +36,6 @@ class RutokenWaitFragment : BottomSheetDialogFragment() {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
 
-        Log.d(Constants.TAG, "Убираем окно ожидания")
+        logger("Убираем окно ожидания")
     }
 }

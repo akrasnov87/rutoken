@@ -6,6 +6,8 @@
 package it.alkona.rutoken.ui.main
 
 import android.app.Application
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -26,5 +28,7 @@ class AlkonaApplication : Application() {
 
         val filePath = File(cacheDir, Constants.LOGCAT)
         Runtime.getRuntime().exec(arrayOf("logcat", "-f", filePath.path, "*:V"))
+        Firebase.crashlytics.setCrashlyticsCollectionEnabled(true)
+        Firebase.crashlytics.setCustomKey("url", Constants.URL)
     }
 }

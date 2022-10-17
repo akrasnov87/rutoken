@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +24,7 @@ import it.alkona.rutoken.repository.User
 import it.alkona.rutoken.repository.UserRepository
 import it.alkona.rutoken.tokenmanager.TokenManager
 import it.alkona.rutoken.ui.buildWaitingTokenString
+import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.ui.workprogress.WorkProgressView
 import it.alkona.rutoken.utils.BusinessRuleCase
 import it.alkona.rutoken.utils.BusinessRuleException
@@ -65,6 +68,7 @@ class WebViewModel(private val context: Context,
      * @param url адрес
      */
     fun downloadFile(activity: Activity, url: URL) {
+        logger("Загружаем файл $url ...")
         val outputFile = getDocumentFile(activity)
 
         url.openStream().use { inp ->
@@ -78,28 +82,39 @@ class WebViewModel(private val context: Context,
                 }
             }
         }
+
+        logger("Файл $url загружен...")
     }
 
     fun getDocumentFile(activity: Activity): File {
+        logger("Читаем документ из файловой системы")
+
         return File(activity.cacheDir, "document.pdf")
     }
 
     fun sign(id: String, isAttached: Boolean) = viewModelScope.launch {
+        logger("Подписываем документ $id, isAttached=$isAttached ...")
         docId = id
         documentUri = Uri.parse("content://it.alkona.rutoken.fileprovider/cache_files/document.pdf")
 
         try {
             tokenPin = user!!.userEntity.pin.toString()
+            logger("Пин-код: $tokenPin")
 
             val token = tokenManager.getSingleTokenAsync().await()
             // token.slot.slotInfo.slotDescription Aktiv Rutoken ECP NFC
+            val tokenInfo = token.slot.slotInfo.slotDescription
+            logger("token info: $tokenInfo")
+
             _status.value = WorkProgressView.Status(context.getString(R.string.processing), true)
 
             val signResult = makeSign(user!!, token, isAttached)
 
             _status.value = WorkProgressView.Status(context.getString(R.string.done), false)
             _result.value = Result.success(signResult)
+            logger("Подписание завершено")
         } catch (e: Exception) {
+            Firebase.crashlytics.recordException(e)
             val exception = if (e is ExecutionException) (e.cause ?: e) else e
 
             _status.value = WorkProgressView.Status(null, false)
@@ -109,17 +124,25 @@ class WebViewModel(private val context: Context,
 
     fun signText(txt: String) = viewModelScope.launch {
         docId = "unknown"
+        logger("Подписываем строки $docId, isAttached=true ...")
         try {
             tokenPin = user!!.userEntity.pin.toString()
+            logger("Пин-код: $tokenPin")
 
             val token = tokenManager.getSingleTokenAsync().await()
+
+            val tokenInfo = token.slot.slotInfo.slotDescription
+            logger("token info: $tokenInfo")
             _status.value = WorkProgressView.Status(context.getString(R.string.processing), true)
 
             val signResult = makeSignText(user!!, token, txt)
 
             _status.value = WorkProgressView.Status(context.getString(R.string.done), false)
             _result.value = Result.success(signResult)
+
+            logger("Подписание завершено")
         } catch (e: Exception) {
+            Firebase.crashlytics.recordException(e)
             val exception = if (e is ExecutionException) (e.cause ?: e) else e
 
             _status.value = WorkProgressView.Status(null, false)
@@ -135,6 +158,8 @@ class WebViewModel(private val context: Context,
         for (u in users) {
             if(u.userEntity.userDefault) {
                 user = u
+
+                Firebase.crashlytics.setUserId(u.fullName)
             }
         }
     }

@@ -19,12 +19,15 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import it.alkona.rutoken.Constants
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.FragmentUserListBinding
 import it.alkona.rutoken.repository.User
 import it.alkona.rutoken.ui.launchCustomTabsUrl
+import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.ui.pin.PinDialogFragment
 import it.alkona.rutoken.ui.pin.PinDialogFragment.Companion.DIALOG_RESULT_KEY
 import it.alkona.rutoken.ui.pin.PinDialogFragment.Companion.PIN_KEY
@@ -52,7 +55,7 @@ class UserListFragment : UserSelectListeners, Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d(Constants.TAG, "Интерфейс выбора пользователя")
+        logger("Интерфейс выбора пользователя")
         binding = FragmentUserListBinding.inflate(inflater)
         binding.addUserButton.setOnClickListener {
             PinDialogFragment().show(childFragmentManager, null)
@@ -109,10 +112,12 @@ class UserListFragment : UserSelectListeners, Fragment() {
             val user = userListAdapter.getUser(position)
 
             viewModel.removeUser(user)
+            logger("Пользователь удалён: ${user.fullName}")
 
             Snackbar.make(binding.userListLayout, R.string.user_removed, Snackbar.LENGTH_LONG)
                 .setAction(R.string.undo) {
                     viewModel.addUser(user)
+                    logger("Пользователь восстановлен: ${user.fullName}")
                 }
                 .setBackgroundTint(
                     ContextCompat.getColor(binding.userListLayout.context, R.color.rutokenBlack)
@@ -125,7 +130,7 @@ class UserListFragment : UserSelectListeners, Fragment() {
     }
 
     override fun onUserSelect(user: User) {
-        Log.d(Constants.TAG, "Пользователь ${user.fullName} выбран по умолчанию")
+        logger("Пользователь ${user.fullName} выбран по умолчанию")
         val users = userListAdapter.getUsers()
         for (u in users) {
             if(u.userEntity.id != user.userEntity.id) {

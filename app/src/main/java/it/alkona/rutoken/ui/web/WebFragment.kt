@@ -13,6 +13,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.launch
@@ -20,6 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.FragmentWebBinding
 import it.alkona.rutoken.Constants
+import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.utils.asReadableText
 import it.alkona.rutoken.utils.shareFileAndLogcat
 import org.bouncycastle.cert.X509CertificateHolder
@@ -47,7 +50,7 @@ class WebFragment : Fragment() {
 
         // асинхронное получение результат попфтки подписания
         viewModel.result.observe(viewLifecycleOwner) { result ->
-            Log.d(Constants.TAG, "Результат подписания документа ${viewModel.docId}: ${result.isSuccess}")
+            logger("Результат подписания документа ${viewModel.docId}: ${result.isSuccess}")
 
             if (result.isSuccess) {
                 if (viewModel.docId == "unknown") {
@@ -57,10 +60,14 @@ class WebFragment : Fragment() {
                 }
             } else {
                 hideWaitFragment()
+                logger(getString(R.string.connection_lost))
+
                 Snackbar.make(binding.root, R.string.connection_lost, Snackbar.LENGTH_SHORT).show()
 
                 val exceptionMessage = (result.exceptionOrNull() as Exception).message.orEmpty()
-                Log.d(Constants.TAG, exceptionMessage)
+                logger(exceptionMessage)
+
+                logger(exceptionMessage)
 
                 webClientDocumentStatus(viewModel.docId,
                     result.exceptionOrNull()?.asReadableText(requireContext())
@@ -70,16 +77,11 @@ class WebFragment : Fragment() {
 
         viewModel.viewModelScope.launch {
             viewModel.initCurrentUser()
+
             if(viewModel.user != null) {
-                Log.d(
-                    Constants.TAG,
-                    "Текущий пользователь инициализирован: ${viewModel.user!!.fullName}"
-                )
+                logger("Текущий пользователь инициализирован: ${viewModel.user!!.fullName}")
             } else {
-                Log.d(
-                    Constants.TAG,
-                    "Текущий пользователь не найден"
-                )
+                logger("Текущий пользователь не найден")
             }
         }
 
@@ -95,6 +97,8 @@ class WebFragment : Fragment() {
 
         viewModel.viewModelScope.launch {
             if (viewModel.isUserNotLoad()) {
+                logger("Пользователь не выбран. Переход на экран выбора пользователей")
+
                 findNavController().navigate(
                     WebFragmentDirections.toUserListFragment()
                 )
@@ -105,12 +109,13 @@ class WebFragment : Fragment() {
     private fun showWaitFragment() {
         rutokenWait = RutokenWaitFragment()
         rutokenWait!!.show(requireActivity().supportFragmentManager, "wait")
-        Log.d(Constants.TAG, "Выводим окно с ожиданием")
+
+        logger("Выводим окно с ожиданием")
     }
 
     private fun hideWaitFragment() {
         if (rutokenWait != null) {
-            Log.d(Constants.TAG, "Убираем окно ожидания автоматически")
+            logger("Убираем окно ожидания автоматически")
             rutokenWait!!.dismiss()
             rutokenWait = null
         }
@@ -123,19 +128,18 @@ class WebFragment : Fragment() {
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.refreshWebView -> {
-                        Log.d(Constants.TAG, "Выбор пункта меню: Обновление страницы")
-
+                        logger("Выбор пункта меню: Обновление страницы")
                         //documentSelect("1234", "https://delo.cap.ru/files/documents/2022/7/28/782b6d26-4b04-4d2c-9868-6f0eef0732d0")
                         binding.webView.reload()
                         true
                     }
                     R.id.selectUser -> {
-                        Log.d(Constants.TAG, "Выбор пункта меню: Выбор пользователя")
-
+                        logger("Выбор пункта меню: Выбор пользователя")
                         findNavController().navigate(R.id.userListFragment)
                         true
                     }
                     R.id.logcat -> {
+                        logger("Выбор пункта меню: Поделиться логами")
                         requireActivity().startActivity(shareFileAndLogcat(requireContext()))
                         true
                     }
@@ -154,12 +158,12 @@ class WebFragment : Fragment() {
             settings.javaScriptEnabled = true
         }
 
-        Log.d(Constants.TAG, "Страница для загрузки ${Constants.URL}")
+        logger("Страница для загрузки ${Constants.URL}")
         webView.loadUrl(Constants.URL)
     }
 
     private fun webClientDocumentStatus(docId: String, message: String, isError: Boolean) {
-        Log.d(Constants.TAG, "Вызов клиентской функции: rutokenStatus")
+        logger("Вызов клиентской функции: rutokenStatus('${docId}', '${message}', ${isError}')")
 
         requireActivity().runOnUiThread {
             binding.webView.evaluateJavascript(
@@ -173,11 +177,11 @@ class WebFragment : Fragment() {
         val file = File(requireActivity().cacheDir, "document.cert")
         file.writeText(clearSignature(signature))
 
-        Log.d(Constants.TAG, "Вызов клиентской функции: rutokenSignatureResult")
+        logger("Вызов клиентской функции: rutokenSignatureResult('${docId}', base64)")
 
         requireActivity().runOnUiThread {
-            //val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
-            val base64 = clearSignature(signature) //Base64.getEncoder().encodeToString(byte)
+
+            val base64 = clearSignature(signature)
             binding.webView.evaluateJavascript(
                 "rutokenSignatureResult('${docId}', '${base64}')",
                 null
@@ -186,11 +190,10 @@ class WebFragment : Fragment() {
     }
 
     private fun webClientTokenSignature(signature: String) {
-        Log.d(Constants.TAG, "Вызов клиентской функции: rutokenTokenSignature")
+        logger("Вызов клиентской функции: rutokenTokenSignature(base64)")
 
         requireActivity().runOnUiThread {
-            //val byte = clearSignature(signature).toByteArray(charset("UTF-8"))
-            val base64 = clearSignature(signature) //Base64.getEncoder().encodeToString(byte)
+            val base64 = clearSignature(signature)
             binding.webView.evaluateJavascript(
                 "rutokenTokenSignature('${base64}')",
                 null
@@ -222,22 +225,22 @@ class WebFragment : Fragment() {
         requireActivity().runOnUiThread {
             showWaitFragment()
         }
-        Log.d(Constants.TAG, "Вызов android функции: rutokenDocumentSelect(${docId}, ${url})")
+        logger("Вызов клиентской функции: rutokenDocumentSelect(${docId}, ${url})")
 
         webClientDocumentStatus(docId, getString(R.string.download), false)
 
         Thread {
             try {
-                viewModel.downloadFile(requireActivity(), URL(Constants.URL + url))
-                //viewModel.downloadFile(requireActivity(), URL("https://delo.cap.ru/files/documents/2022/9/21/eeb3513a-a6e9-495b-8cc6-f0cb036121fd"))
-
+                if(url != "undefined") {
+                    viewModel.downloadFile(requireActivity(), URL(Constants.URL + url))
+                }
                 requireActivity().runOnUiThread {
                     webClientDocumentStatus(docId, getString(R.string.signature), false)
 
                     viewModel.sign(docId, isAttached = false)
                 }
             } catch (e: MalformedURLException) {
-                Log.d(Constants.TAG, "Ошибка вызов android функции: rutokenDocumentSelect(${docId}, ${url})")
+                it.alkona.rutoken.ui.error(e, "Ошибка вызов android функции: rutokenDocumentSelect(${docId}, ${url})")
             }
         }.start()
     }
@@ -247,7 +250,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun getCertificate(): String {
-        Log.d(Constants.TAG, "Вызов android функции: rutokenGetCertificate")
+        logger("Вызов android функции: rutokenGetCertificate")
 
         val user = viewModel.user
 
@@ -258,7 +261,7 @@ class WebFragment : Fragment() {
         } else {
             "[]"
         }
-        Log.d(Constants.TAG, "Данные о сертификате: " + str)
+        logger("Данные о сертификате: $str")
         return str
     }
 
@@ -271,19 +274,19 @@ class WebFragment : Fragment() {
             hideWaitFragment()
         }
 
-        Log.d(Constants.TAG, "Вызов android функции: rutokenDone")
+        logger("Вызов android функции: rutokenDone")
 
         val cert = File(requireActivity().cacheDir, "document.cert")
         if (cert.exists()) {
             if(cert.delete()) {
-                Log.d(Constants.TAG, "Подпись документа ${docId} удалена.")
+                logger("Подпись документа ${docId} удалена.")
             }
         }
 
         val file = viewModel.getDocumentFile(requireActivity())
         if (file.exists()) {
             if(file.delete()) {
-                Log.d(Constants.TAG, "Документ ${docId} удалён.")
+                logger("Документ ${docId} удалён.")
             }
         }
     }
@@ -293,8 +296,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun enabled(): Boolean {
-        Log.d(Constants.TAG, "Вызов android функции: rutokenEnabled")
-
+        logger("Вызов android функции: rutokenEnabled")
         return true
     }
 
@@ -303,7 +305,7 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun signToken(token: String) {
-        Log.d(Constants.TAG, "Вызов android функции: rutokenSignToken('${token}')")
+        logger("Вызов android функции: rutokenSignToken('${token}')")
 
         Thread {
             try {
@@ -313,7 +315,7 @@ class WebFragment : Fragment() {
                     viewModel.signText(token)
                 }
             } catch (e: MalformedURLException) {
-                Log.d(Constants.TAG, "Ошибка вызов android функции: rutokenSignToken(${token})")
+                it.alkona.rutoken.ui.error(e, "Ошибка вызов android функции: rutokenSignToken(${token})")
             }
         }.start()
     }

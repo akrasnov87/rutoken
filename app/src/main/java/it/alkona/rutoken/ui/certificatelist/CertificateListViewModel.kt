@@ -11,6 +11,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,6 +25,7 @@ import it.alkona.rutoken.repository.UserRepository
 import it.alkona.rutoken.repository.makeUser
 import it.alkona.rutoken.tokenmanager.TokenManager
 import it.alkona.rutoken.ui.buildWaitingTokenString
+import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.ui.workprogress.WorkProgressView.Status
 import it.alkona.rutoken.utils.BusinessRuleCase.CERTIFICATE_NOT_FOUND
 import it.alkona.rutoken.utils.BusinessRuleCase.USER_DUPLICATES
@@ -66,6 +69,7 @@ class CertificateListViewModel(
         try {
             val token = tokenManager.getSingleTokenAsync().await()
             _status.value = Status(context.getString(R.string.processing), true)
+            logger("Информация о токене: ${token.slot.slotInfo.slotDescription}")
 
             val serialNumber = withContext(Dispatchers.IO) {
                 return@withContext token.getSerialNumber()
@@ -88,6 +92,8 @@ class CertificateListViewModel(
 
             _status.value = Status(context.getString(R.string.done), false)
         } catch (e: Exception) {
+            Firebase.crashlytics.recordException(e)
+
             val exception = if (e is ExecutionException) (e.cause ?: e) else e
 
             _status.value = Status(null, false)
@@ -118,6 +124,7 @@ class CertificateListViewModel(
 
     fun addUser(certificate: Certificate) = viewModelScope.launch {
         try {
+            logger("Выбран сертификат: ${certificate.fullName}")
             userRepository.addUser(certificate)
             _addUserResult.value = Result.success(Unit)
         } catch (e: SQLiteConstraintException) {

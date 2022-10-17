@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.SortedListAdapterCallback
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.UserCardBinding
 import it.alkona.rutoken.repository.User
+import it.alkona.rutoken.ui.logger
 
 class UserListAdapter(
     private val context: Context,
@@ -61,7 +62,7 @@ class UserListAdapter(
         binding.userCardView.setOnClickListener {
             if(!user.userEntity.userDefault) {
                 user.userEntity.userDefault = true
-
+                logger("Пользователь по умолчанию: ${user.fullName}")
                 Toast.makeText(
                     context,
                     context.getString(R.string.user_default_selected),

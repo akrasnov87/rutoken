@@ -6,8 +6,11 @@ import android.webkit.ConsoleMessage
 import android.webkit.JsResult
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import it.alkona.rutoken.R
 import it.alkona.rutoken.Constants
+import it.alkona.rutoken.ui.logger
 
 /**
  * Собственный объект для работы с интерфейсом Chrome
@@ -24,6 +27,7 @@ class CustomWebChromeClient(
         message: String?,
         result: JsResult?
     ): Boolean {
+        logger("alert: $message")
         return super.onJsAlert(view, context.getString(R.string.app_name), message, result)
     }
 
@@ -31,7 +35,9 @@ class CustomWebChromeClient(
      * Переопределяю вывод логов из console.log
      */
     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-        consoleMessage?.message()?.let { Log.d(Constants.CONSOLE_TAG, it) }
+        consoleMessage?.message()?.let {
+            logger("console.log: $it")
+        }
 
         return super.onConsoleMessage(consoleMessage)
     }

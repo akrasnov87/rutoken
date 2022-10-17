@@ -21,6 +21,7 @@ import org.koin.core.parameter.parametersOf
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.FragmentCertificateListBinding
 import it.alkona.rutoken.ui.certificatelist.CertificateListFragmentDirections.toUserListFragment
+import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.ui.workprogress.WorkProgressView.Status
 import it.alkona.rutoken.utils.asReadableText
 import it.alkona.rutoken.utils.showError
@@ -53,6 +54,7 @@ class CertificateListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        logger("Выбор сертификата")
         val args: CertificateListFragmentArgs by navArgs()
         viewModel = getViewModel(parameters = { parametersOf(args.pin) })
 

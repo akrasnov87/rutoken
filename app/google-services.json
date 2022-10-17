@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "451437472122",
+    "project_id": "alkona-sed",
+    "storage_bucket": "alkona-sed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451437472122:android:5603f71313794361d54ec3",
+        "android_client_info": {
+          "package_name": "it.alkona.rutoken"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451437472122-ja1lv7v23dokvo75rfnj21u2329a8k35.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.alkona.rutoken",
+            "certificate_hash": "22de7a1f506f97565dd3cd2a11cbe30b20720e49"
+          }
+        },
+        {
+          "client_id": "451437472122-p6joqql47gfslvrkonkpqkn9lp3eghtn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBK1VilyYt_s1kPO-0CLPkGccprYjBA34U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "451437472122-p6joqql47gfslvrkonkpqkn9lp3eghtn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
