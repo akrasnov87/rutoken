@@ -28,6 +28,7 @@ class CustomWebChromeClient(
         result: JsResult?
     ): Boolean {
         logger("alert: $message")
+
         return super.onJsAlert(view, context.getString(R.string.app_name), message, result)
     }
 

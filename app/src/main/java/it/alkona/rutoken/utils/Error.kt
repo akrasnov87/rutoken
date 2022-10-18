@@ -15,6 +15,7 @@ import androidx.annotation.MainThread
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import it.alkona.rutoken.R
+import it.alkona.rutoken.ui.logger
 
 /**
  * Shows error in the snackbar using given errorMessage with ability to copy it.
@@ -25,6 +26,8 @@ import it.alkona.rutoken.R
 fun showError(view: View, errorMessage: String) {
     showSnackbar(view, errorMessage)
     Log.e(view.context.packageName, errorMessage)
+
+    logger("Error: $errorMessage")
 }
 
 /**

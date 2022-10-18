@@ -62,7 +62,9 @@ class UserListAdapter(
         binding.userCardView.setOnClickListener {
             if(!user.userEntity.userDefault) {
                 user.userEntity.userDefault = true
-                logger("Пользователь по умолчанию: ${user.fullName}")
+
+                logger("Пользователь ${user.fullName} выбран, как по умолчанию")
+
                 Toast.makeText(
                     context,
                     context.getString(R.string.user_default_selected),

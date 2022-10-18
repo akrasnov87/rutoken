@@ -69,7 +69,7 @@ class CertificateListViewModel(
         try {
             val token = tokenManager.getSingleTokenAsync().await()
             _status.value = Status(context.getString(R.string.processing), true)
-            logger("Информация о токене: ${token.slot.slotInfo.slotDescription}")
+            logger("Информация о токене при чтении сертификатов: ${token.slot.slotInfo.slotDescription}")
 
             val serialNumber = withContext(Dispatchers.IO) {
                 return@withContext token.getSerialNumber()
@@ -93,9 +93,7 @@ class CertificateListViewModel(
             _status.value = Status(context.getString(R.string.done), false)
         } catch (e: Exception) {
             Firebase.crashlytics.recordException(e)
-
             val exception = if (e is ExecutionException) (e.cause ?: e) else e
-
             _status.value = Status(null, false)
             _pkcs11Result.value = Result.failure(exception)
         }
@@ -124,10 +122,13 @@ class CertificateListViewModel(
 
     fun addUser(certificate: Certificate) = viewModelScope.launch {
         try {
-            logger("Выбран сертификат: ${certificate.fullName}")
+            logger("Выбранный сертификат ${certificate.fullName} добавляется в базу данных")
+
             userRepository.addUser(certificate)
             _addUserResult.value = Result.success(Unit)
         } catch (e: SQLiteConstraintException) {
+            Firebase.crashlytics.recordException(e)
+
             _addUserResult.value = Result.failure(BusinessRuleException(USER_DUPLICATES))
         }
     }

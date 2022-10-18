@@ -28,6 +28,7 @@ class AlkonaApplication : Application() {
 
         val filePath = File(cacheDir, Constants.LOGCAT)
         Runtime.getRuntime().exec(arrayOf("logcat", "-f", filePath.path, "*:V"))
+
         Firebase.crashlytics.setCrashlyticsCollectionEnabled(true)
         Firebase.crashlytics.setCustomKey("url", Constants.URL)
     }

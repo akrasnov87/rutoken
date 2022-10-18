@@ -31,8 +31,21 @@ fun logger(message: String) {
     Log.d(Constants.TAG, message)
 }
 
+fun action(message: String) {
+    logger("action: $message")
+}
+
+fun window(message: String) {
+    logger("window: $message")
+}
+
+fun warning(message: String) {
+    logger("warning: $message")
+}
+
 fun error(throwable: Throwable, message: String?) {
     Firebase.crashlytics.recordException(throwable)
+
     if(message != null) {
         logger(message)
     }

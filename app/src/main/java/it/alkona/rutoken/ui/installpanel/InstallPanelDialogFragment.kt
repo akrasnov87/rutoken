@@ -14,11 +14,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import it.alkona.rutoken.R
+import it.alkona.rutoken.ui.action
+import it.alkona.rutoken.ui.logger
+import it.alkona.rutoken.ui.window
 
 const val PCSC_PACKAGE_NAME = "ru.rutoken"
 
 class InstallPanelDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        window("Предложение установить сервис для Рутокен")
+
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.title_no_pcsc)
             .setMessage(R.string.message_no_pcsc)
@@ -28,6 +33,7 @@ class InstallPanelDialogFragment : DialogFragment() {
     }
 
     private fun installPanel() = with(requireActivity()) {
+        action("Переход на экран для скачивания службы")
         try {
             startActivity(
                 Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$PCSC_PACKAGE_NAME"))
@@ -48,6 +54,8 @@ fun isRutokenPanelInstalled(activity: FragmentActivity): Boolean {
     val application = activity.packageManager.getInstalledApplications(0).firstOrNull {
         it.packageName == PCSC_PACKAGE_NAME
     }
+
+    logger("Признак установленной службы: ${application != null}")
 
     return application != null
 }

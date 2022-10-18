@@ -23,6 +23,7 @@ import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.FragmentWebBinding
 import it.alkona.rutoken.Constants
 import it.alkona.rutoken.ui.logger
+import it.alkona.rutoken.ui.window
 import it.alkona.rutoken.utils.asReadableText
 import it.alkona.rutoken.utils.shareFileAndLogcat
 import org.bouncycastle.cert.X509CertificateHolder
@@ -67,8 +68,6 @@ class WebFragment : Fragment() {
                 val exceptionMessage = (result.exceptionOrNull() as Exception).message.orEmpty()
                 logger(exceptionMessage)
 
-                logger(exceptionMessage)
-
                 webClientDocumentStatus(viewModel.docId,
                     result.exceptionOrNull()?.asReadableText(requireContext())
                         ?: ("${getString(R.string.error_text)}\n\n" + exceptionMessage), true)
@@ -92,6 +91,8 @@ class WebFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        window("WebView")
 
         setupToolbar()
 
@@ -261,7 +262,9 @@ class WebFragment : Fragment() {
         } else {
             "[]"
         }
-        logger("Данные о сертификате: $str")
+        if(user != null) {
+            logger("Данные о сертификате пользователя: ${user.fullName}")
+        }
         return str
     }
 

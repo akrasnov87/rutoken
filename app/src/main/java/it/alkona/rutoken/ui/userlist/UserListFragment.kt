@@ -26,13 +26,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.FragmentUserListBinding
 import it.alkona.rutoken.repository.User
+import it.alkona.rutoken.ui.action
 import it.alkona.rutoken.ui.launchCustomTabsUrl
 import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.ui.pin.PinDialogFragment
 import it.alkona.rutoken.ui.pin.PinDialogFragment.Companion.DIALOG_RESULT_KEY
 import it.alkona.rutoken.ui.pin.PinDialogFragment.Companion.PIN_KEY
 import it.alkona.rutoken.ui.userlist.UserListFragmentDirections.toCertificateListFragment
-
+import it.alkona.rutoken.ui.window
 
 const val PRIVACY_POLICY_URL = "https://www.rutoken.ru/company/policy/demosmena-android.html"
 
@@ -43,8 +44,13 @@ class UserListFragment : UserSelectListeners, Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window("Список пользователей")
+
         userListAdapter = UserListAdapter(requireContext(), this)
         childFragmentManager.setFragmentResultListener(DIALOG_RESULT_KEY, this) { _, bundle ->
+            action("Переход на экран: Список сертификатов")
+
             val pin = bundle.getString(PIN_KEY)
             findNavController().navigate(toCertificateListFragment(pin!!))
         }
@@ -55,9 +61,9 @@ class UserListFragment : UserSelectListeners, Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        logger("Интерфейс выбора пользователя")
         binding = FragmentUserListBinding.inflate(inflater)
         binding.addUserButton.setOnClickListener {
+            action("Кнопка добавления пользователя, ввод Пин-кода")
             PinDialogFragment().show(childFragmentManager, null)
         }
 
@@ -74,28 +80,12 @@ class UserListFragment : UserSelectListeners, Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //setupToolbar()
-
         viewModel.getUsersAsync().observe(viewLifecycleOwner) {
+            logger("Получение списка пользователей: ${it.size}")
             userListAdapter.setUsers(it)
 
             binding.emptyUserListTextView.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
             binding.usersRecyclerView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE
-        }
-    }
-
-    private fun setupToolbar() {
-        binding.toolbarLayout.toolbar.apply {
-            inflateMenu(R.menu.menu_main)
-            setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.toPrivacyPolicy -> {
-                        context.launchCustomTabsUrl(Uri.parse(PRIVACY_POLICY_URL))
-                        true
-                    }
-                    else -> false
-                }
-            }
         }
     }
 
@@ -112,12 +102,14 @@ class UserListFragment : UserSelectListeners, Fragment() {
             val user = userListAdapter.getUser(position)
 
             viewModel.removeUser(user)
-            logger("Пользователь удалён: ${user.fullName}")
+
+            action("Удаление пользователя ${user.fullName} через swipe")
 
             Snackbar.make(binding.userListLayout, R.string.user_removed, Snackbar.LENGTH_LONG)
                 .setAction(R.string.undo) {
                     viewModel.addUser(user)
-                    logger("Пользователь восстановлен: ${user.fullName}")
+
+                    action("Отменено удаление пользователя ${user.fullName}")
                 }
                 .setBackgroundTint(
                     ContextCompat.getColor(binding.userListLayout.context, R.color.rutokenBlack)
@@ -130,7 +122,8 @@ class UserListFragment : UserSelectListeners, Fragment() {
     }
 
     override fun onUserSelect(user: User) {
-        logger("Пользователь ${user.fullName} выбран по умолчанию")
+        action("Пользователь ${user.fullName} выбран")
+
         val users = userListAdapter.getUsers()
         for (u in users) {
             if(u.userEntity.id != user.userEntity.id) {
@@ -138,7 +131,7 @@ class UserListFragment : UserSelectListeners, Fragment() {
             }
             viewModel.updateUser(u)
         }
+
         findNavController().navigate(UserListFragmentDirections.toWebFragment())
-        //findNavController().popBackStack(R.id.webFragment, true);
     }
 }

@@ -16,6 +16,7 @@ import it.alkona.rutoken.pkcs11.Pkcs11Launcher
 import it.alkona.rutoken.ui.installpanel.InstallPanelDialogFragment
 import it.alkona.rutoken.ui.installpanel.isRutokenPanelInstalled
 import it.alkona.rutoken.ui.logger
+import it.alkona.rutoken.ui.window
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
@@ -27,13 +28,14 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = getViewModel()
         lifecycle.addObserver(get<Pkcs11Launcher>())
+
+        window("Главный экран")
     }
 
     override fun onResume() {
         super.onResume()
-        if (!isRutokenPanelInstalled(this)) {
-            logger("Требуется установить службу")
 
+        if (!isRutokenPanelInstalled(this)) {
             InstallPanelDialogFragment().show(supportFragmentManager, null)
             return
         }

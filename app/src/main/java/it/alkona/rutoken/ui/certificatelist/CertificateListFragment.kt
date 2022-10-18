@@ -20,8 +20,11 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.FragmentCertificateListBinding
+import it.alkona.rutoken.ui.action
 import it.alkona.rutoken.ui.certificatelist.CertificateListFragmentDirections.toUserListFragment
 import it.alkona.rutoken.ui.logger
+import it.alkona.rutoken.ui.warning
+import it.alkona.rutoken.ui.window
 import it.alkona.rutoken.ui.workprogress.WorkProgressView.Status
 import it.alkona.rutoken.utils.asReadableText
 import it.alkona.rutoken.utils.showError
@@ -34,6 +37,7 @@ class CertificateListFragment : Fragment() {
         override fun onClick(certificate: Certificate) {
             certificate.userEntity.pin = viewModel.getTokenPin()
             viewModel.addUser(certificate)
+            action("Сертификат добавлен")
         }
     })
 
@@ -54,7 +58,8 @@ class CertificateListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logger("Выбор сертификата")
+        window("Выбор сертификата")
+
         val args: CertificateListFragmentArgs by navArgs()
         viewModel = getViewModel(parameters = { parametersOf(args.pin) })
 
@@ -66,18 +71,26 @@ class CertificateListFragment : Fragment() {
             binding.certificatesView.visibility = if (result.isSuccess) VISIBLE else GONE
             binding.workProgress.visibility = if (result.isSuccess) GONE else VISIBLE
 
-            if (result.isSuccess)
+            if (result.isSuccess) {
                 certificatesListAdapter.certificates = result.getOrThrow()
-            else
-                binding.workProgress.setStatus(Status(result.getFailureMessage()))
+                logger("Прочитано из Рутокен ${certificatesListAdapter.certificates.size} сертификатов")
+            }
+            else {
+                val message = result.getFailureMessage()
+                warning("Ошибка чтения списка сертификатов из Рутокен: $message")
+                binding.workProgress.setStatus(Status(message))
+            }
         }
 
         viewModel.addUserResult.observe(viewLifecycleOwner) { result ->
             if (result.isSuccess) {
                 Toast.makeText(context, getString(R.string.add_user_ok), Toast.LENGTH_SHORT).show()
+
                 findNavController().navigate(toUserListFragment())
             } else {
-                showError(binding.certificatesRecyclerView, result.getFailureMessage())
+                val message = result.getFailureMessage()
+                warning("Ошибка добавления пользователя из Рутокен: $message")
+                showError(binding.certificatesRecyclerView, message)
             }
         }
     }

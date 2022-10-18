@@ -15,6 +15,7 @@ import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.DialogFragmentPinBinding
 import it.alkona.rutoken.databinding.FragmentRutokenWaitBinding
 import it.alkona.rutoken.ui.logger
+import it.alkona.rutoken.ui.window
 
 class RutokenWaitFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentRutokenWaitBinding
@@ -22,6 +23,7 @@ class RutokenWaitFragment : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        window("Ожидание выполнения процесса подписания")
     }
 
     override fun onCreateView(

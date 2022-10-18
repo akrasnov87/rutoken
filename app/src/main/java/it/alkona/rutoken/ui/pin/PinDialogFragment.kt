@@ -16,11 +16,14 @@ import androidx.fragment.app.setFragmentResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import it.alkona.rutoken.R
 import it.alkona.rutoken.databinding.DialogFragmentPinBinding
+import it.alkona.rutoken.ui.window
 
 class PinDialogFragment : DialogFragment() {
     private lateinit var binding: DialogFragmentPinBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        window("Пин-код")
+
         binding = DialogFragmentPinBinding.inflate(layoutInflater)
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
