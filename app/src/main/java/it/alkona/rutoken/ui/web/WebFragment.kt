@@ -47,6 +47,11 @@ class WebFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentWebBinding.inflate(layoutInflater)
+
+        if(savedInstanceState != null) {
+            binding.webView.restoreState(savedInstanceState);
+        }
+
         viewModel = getViewModel()
 
         // асинхронное получение результат попфтки подписания
@@ -83,8 +88,7 @@ class WebFragment : Fragment() {
                 logger("Текущий пользователь не найден")
             }
         }
-
-        webViewInit(binding.webView)
+        webViewInit(binding.webView, savedInstanceState == null)
 
         return binding.root
     }
@@ -105,6 +109,12 @@ class WebFragment : Fragment() {
                 )
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        binding.webView.saveState(outState)
+
+        super.onSaveInstanceState(outState)
     }
 
     private fun showWaitFragment() {
@@ -150,7 +160,7 @@ class WebFragment : Fragment() {
         }
     }
 
-    private fun webViewInit(webView: WebView) {
+    private fun webViewInit(webView: WebView, created: Boolean) {
         webView.webChromeClient = CustomWebChromeClient(requireContext())
         webView.webViewClient = SSLTolerentWebViewClient()
         webView.settings.domStorageEnabled = true
@@ -159,8 +169,10 @@ class WebFragment : Fragment() {
             settings.javaScriptEnabled = true
         }
 
-        logger("Страница для загрузки ${Constants.URL}")
-        webView.loadUrl(Constants.URL)
+        if(created) {
+            logger("Страница для загрузки ${Constants.URL}")
+            webView.loadUrl(Constants.URL)
+        }
     }
 
     private fun webClientDocumentStatus(docId: String, message: String, isError: Boolean) {
