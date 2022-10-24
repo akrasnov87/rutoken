@@ -99,7 +99,7 @@ class WebViewModel(private val context: Context,
 
         try {
             tokenPin = user!!.userEntity.pin.toString()
-            logger("Пин-код: $tokenPin")
+            logger("Ввод Пин-кода")
 
             val token = tokenManager.getSingleTokenAsync().await()
             // token.slot.slotInfo.slotDescription Aktiv Rutoken ECP NFC
@@ -127,7 +127,7 @@ class WebViewModel(private val context: Context,
         logger("Подписываем строки $docId, isAttached=true ...")
         try {
             tokenPin = user!!.userEntity.pin.toString()
-            logger("Пин-код: $tokenPin")
+            logger("Ввод Пин-кода")
 
             val token = tokenManager.getSingleTokenAsync().await()
 
