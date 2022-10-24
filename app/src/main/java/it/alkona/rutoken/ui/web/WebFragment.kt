@@ -60,6 +60,9 @@ class WebFragment : Fragment() {
 
             if (result.isSuccess) {
                 if (viewModel.docId == "unknown") {
+                    // при ЭП
+                    hideWaitFragment()
+
                     webClientTokenSignature(result.getOrThrow())
                 } else {
                     webClientDocumentSignature(viewModel.docId, result.getOrThrow())
@@ -320,6 +323,10 @@ class WebFragment : Fragment() {
      */
     @JavascriptInterface
     fun signToken(token: String) {
+        requireActivity().runOnUiThread {
+            showWaitFragment()
+        }
+
         logger("Вызов android функции: rutokenSignToken('${token}')")
 
         Thread {

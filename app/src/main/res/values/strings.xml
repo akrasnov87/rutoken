@@ -58,5 +58,5 @@
     <string name="sign_сert">Вход по сертификату …</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="rutoken_progress">Рутокен обнаружен, идёт обмен данными …</string>
-    <string name="rutoken_progress2">Убедитесь, что Рутокен подключён (поднесён).\nПодписание будет выполнено автоматически.</string>
+    <string name="rutoken_progress2">Убедитесь, что Рутокен подключён (поднесён).</string>
 </resources>
