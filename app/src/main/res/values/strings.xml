@@ -59,4 +59,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="rutoken_progress">Рутокен обнаружен, идёт обмен данными …</string>
     <string name="rutoken_progress2">Убедитесь, что Рутокен подключён (поднесён).</string>
+    <string name="download_save_message">Вы хотите сохранить файл</string>
+    <string name="select_document">Выбор документа</string>
 </resources>

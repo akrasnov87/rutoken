@@ -7,16 +7,14 @@ package it.alkona.rutoken.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
-import org.koin.android.ext.android.get
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import it.alkona.rutoken.databinding.ActivityMainBinding
 import it.alkona.rutoken.pkcs11.Pkcs11Launcher
 import it.alkona.rutoken.ui.installpanel.InstallPanelDialogFragment
 import it.alkona.rutoken.ui.installpanel.isRutokenPanelInstalled
-import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.ui.window
+import org.koin.android.ext.android.get
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel

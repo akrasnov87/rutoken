@@ -1,12 +1,8 @@
 package it.alkona.rutoken.ui.web
 
 import android.net.http.SslError
+import android.webkit.*
 
-import android.webkit.SslErrorHandler
-
-import android.webkit.WebView
-
-import android.webkit.WebViewClient
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import it.alkona.rutoken.ui.logger
@@ -29,5 +25,36 @@ class SSLTolerentWebViewClient : WebViewClient() {
                 "})();")
 
         logger("Внедряем javascript код для перенаправления на объекты window")
+    }
+
+    override fun onReceivedError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        error: WebResourceError?
+    ) {
+        super.onReceivedError(view, request, error)
+        if (request != null) {
+            error("${request.url} ${error.toString()}")
+        }
+    }
+
+    override fun onReceivedHttpError(
+        view: WebView?,
+        request: WebResourceRequest?,
+        errorResponse: WebResourceResponse?
+    ) {
+        super.onReceivedHttpError(view, request, errorResponse)
+
+        if (request != null) {
+            val inputAsString = errorResponse?.data?.bufferedReader().use { it?.readText() ?: "" }
+            error("${request.url} $inputAsString")
+        }
+    }
+
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        if (request != null) {
+            logger("Вывоз ссылки: ${request.url}")
+        }
+        return super.shouldOverrideUrlLoading(view, request)
     }
 }
