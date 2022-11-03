@@ -15,6 +15,7 @@ import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.URLUtil
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
@@ -100,6 +101,7 @@ class WebFragment : Fragment() {
                 logger("Текущий пользователь не найден")
             }
         }
+
         webViewInit(binding.webView, savedInstanceState == null)
 
         return binding.root
@@ -174,6 +176,7 @@ class WebFragment : Fragment() {
 
     private fun webViewInit(webView: WebView, created: Boolean) {
         webView.webChromeClient = CustomWebChromeClient(requireContext(), requireActivity() as MainActivity)
+
         webView.webViewClient = SSLTolerentWebViewClient()
         webView.settings.domStorageEnabled = true
         webView.settings.allowFileAccess = true
@@ -197,7 +200,9 @@ class WebFragment : Fragment() {
                     //Do this, if permission granted
                     downloadDialog(url, userAgent, contentDisposition, mimetype)
                 } else {
-                    error("Нет разрешений на запись в EXTERNAL STORAGE")
+                    logger("Нет разрешений на запись в EXTERNAL STORAGE")
+
+                    Toast.makeText(requireContext(), "Нет разрешений на запись!", Toast.LENGTH_SHORT).show()
 
                     //Do this, if there is no permission
                     ActivityCompat.requestPermissions(
@@ -220,7 +225,7 @@ class WebFragment : Fragment() {
         try {
             filename = contentDisposition.split(";")[1].split("=")[1].replace("\"", "")
         }catch (e: Exception) {
-            e.message?.let { error(it) }
+            e.message?.let { logger(it) }
         }
         //Alertdialog
         val builder = AlertDialog.Builder(requireContext())

@@ -5,7 +5,14 @@
 
 package it.alkona.rutoken.ui.main
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import it.alkona.rutoken.databinding.ActivityMainBinding
 import it.alkona.rutoken.pkcs11.Pkcs11Launcher
@@ -18,6 +25,17 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
+    var filePath: ValueCallback<Array<Uri>>? = null
+    var getFile: ActivityResultLauncher<Intent> = this.registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_CANCELED) {
+                filePath?.onReceiveValue(null)
+            } else if (it.resultCode == Activity.RESULT_OK && filePath != null) {
+                filePath!!.onReceiveValue(
+                    WebChromeClient.FileChooserParams.parseResult(it.resultCode, it.data))
+                filePath = null
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

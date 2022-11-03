@@ -33,8 +33,8 @@ class SSLTolerentWebViewClient : WebViewClient() {
         error: WebResourceError?
     ) {
         super.onReceivedError(view, request, error)
-        if (request != null) {
-            error("${request.url} ${error.toString()}")
+        if (request != null && error != null) {
+            logger("${request.url} $error")
         }
     }
 
@@ -45,9 +45,9 @@ class SSLTolerentWebViewClient : WebViewClient() {
     ) {
         super.onReceivedHttpError(view, request, errorResponse)
 
-        if (request != null) {
-            val inputAsString = errorResponse?.data?.bufferedReader().use { it?.readText() ?: "" }
-            error("${request.url} $inputAsString")
+        if (request != null && errorResponse != null) {
+            val inputAsString = errorResponse.data?.bufferedReader().use { it?.readText() ?: "" }
+            logger("${request.url} $inputAsString")
         }
     }
 
