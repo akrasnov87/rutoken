@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021, Aktiv-Soft JSC.
+ * See the LICENSE file at the top-level directory of this distribution.
+ * All Rights Reserved.
+ */
+
 package it.alkona.rutoken.pkcs11
 
 import android.app.Activity

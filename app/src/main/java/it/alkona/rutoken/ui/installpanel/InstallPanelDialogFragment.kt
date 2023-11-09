@@ -19,6 +19,7 @@ import it.alkona.rutoken.ui.logger
 import it.alkona.rutoken.ui.window
 
 const val PCSC_PACKAGE_NAME = "ru.rutoken"
+const val RUSTORE_PACKAGE_NAME = "ru.vk.store"
 
 class InstallPanelDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -34,17 +35,27 @@ class InstallPanelDialogFragment : DialogFragment() {
 
     private fun installPanel() = with(requireActivity()) {
         action("Переход на экран для скачивания службы")
-        try {
-            startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$PCSC_PACKAGE_NAME"))
-            )
-        } catch (e: ActivityNotFoundException) {
+
+        if(isRustoreInstalled(requireActivity())) {
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=$PCSC_PACKAGE_NAME")
+                    Uri.parse("https://apps.rustore.ru/app/$PCSC_PACKAGE_NAME")
                 )
             )
+        } else {
+            try {
+                startActivity(
+                    Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$PCSC_PACKAGE_NAME"))
+                )
+            } catch (e: ActivityNotFoundException) {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=$PCSC_PACKAGE_NAME")
+                    )
+                )
+            }
         }
         finish()
     }
@@ -53,6 +64,16 @@ class InstallPanelDialogFragment : DialogFragment() {
 fun isRutokenPanelInstalled(activity: FragmentActivity): Boolean {
     val application = activity.packageManager.getInstalledApplications(0).firstOrNull {
         it.packageName == PCSC_PACKAGE_NAME
+    }
+
+    logger("Признак установленной службы: ${application != null}")
+
+    return application != null
+}
+
+fun isRustoreInstalled(activity: FragmentActivity): Boolean {
+    val application = activity.packageManager.getInstalledApplications(0).firstOrNull {
+        it.packageName == RUSTORE_PACKAGE_NAME
     }
 
     logger("Признак установленной службы: ${application != null}")

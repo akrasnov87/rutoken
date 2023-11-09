@@ -14,6 +14,7 @@ import org.koin.core.context.startKoin
 import it.alkona.rutoken.koin.koinModule
 import it.alkona.rutoken.tokenmanager.TokenManager
 import it.alkona.rutoken.Constants
+import ru.rutoken.rtpcsc.RtPcsc
 import java.io.File
 
 
@@ -24,6 +25,7 @@ class AlkonaApplication : Application() {
             androidContext(this@AlkonaApplication)
             modules(koinModule)
         }
+        RtPcsc.setAppContext(this)
         get<TokenManager>()
 
         val filePath = File(cacheDir, Constants.LOGCAT)

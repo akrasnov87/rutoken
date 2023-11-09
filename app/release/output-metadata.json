@@ -5,15 +5,15 @@
     "kind": "Directory"
   },
   "applicationId": "it.alkona.rutoken",
-  "variantName": "debug",
+  "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
       "versionCode": 5,
-      "versionName": "0.77.0.441",
-      "outputFile": "app-debug.apk"
+      "versionName": "0.472.0.438",
+      "outputFile": "0.472.0.438-release.apk"
     }
   ],
   "elementType": "File"
