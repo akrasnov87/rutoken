@@ -21,7 +21,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionName getVersion()
-        versionCode 7
+        versionCode 8
         setProperty("archivesBaseName", getVersion())
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"

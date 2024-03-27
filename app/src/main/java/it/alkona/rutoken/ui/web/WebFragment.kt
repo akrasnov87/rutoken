@@ -194,7 +194,8 @@ class WebFragment : Fragment() {
 
         webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
 //checking Runtime permissions
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
             {
                 if (checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     //Do this, if permission granted
